@@ -157,6 +157,10 @@ body.lightMode form .form-control[type=file] {
   color: rgb(86, 86, 86);
 }
 
+.hide {
+  display: none;
+}
+
 .modal-content {
   background: rgb(19, 19, 19);
   color: #fff;
@@ -166,6 +170,6 @@ body.lightMode .modal-content {
   color: #000;
   border: 1px solid rgb(83, 83, 83);
 }
-.modal-content .modal-header button {
-  color: #fff;
+.modal-content .modal-body h6 {
+  color: rgb(255, 0, 4);
 }/*# sourceMappingURL=index.css.map */
