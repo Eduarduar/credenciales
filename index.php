@@ -28,7 +28,8 @@
 
                 </div>
 
-                <div class="container-button_confi">
+                <!-- -------------------------- este boton solo se mostrara si hay una seción iniciada y el boton de login no debe de apareser ---------------------------------- -->
+                <!-- <div class="container-button_confi">
                     
                     <button type="button" class="btn btn-dark">
                         <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-gear-fill" viewBox="0 0 16 16">
@@ -36,7 +37,7 @@
                         </svg>
                     </button>
 
-                </div>
+                </div> -->
 
                 <div class="container-button_login">
 
@@ -53,7 +54,7 @@
 
         </header>
 
-        <main>
+        <main>  
 
             <div class="container-center">
 
@@ -70,15 +71,15 @@
 
                 <div class="container-buttons">
 
-                    <div class="container-button_CC">
+                    <div class="container-button_CC hide">
 
-                        <button type="button" class="btn btn-success">Consulta tu credencial</button>
+                        <button type="button" id="CC" class="btn btn-success">Consulta tu credencial</button>
 
                     </div>
 
                     <div class="container-button_GC">
 
-                        <button type="button" class="btn btn-secondary">Generar tu credencial</button>
+                        <button type="button" id="GC" class="btn btn-secondary">Generar tu credencial</button>
 
                     </div>
 
@@ -92,48 +93,69 @@
 
                         <h2>Consulta</h2>
 
+                        
                         <div class="mb-3">
-                            <label for="consulta-NoContol" class="form-label">Numero de control</label>
+                            <label for="consulta-NoContol" class="form-label">Numero de control:</label>
                             <input type="text" class="form-control" id="consulta-NoControl" placeholder="Ingresa tu numero de control">
+                            <div class="invalid-feedback">
+                                Ingrese un Numero de control valido.
+                            </div>
                         </div>
-
+                        
                         <div class="mb-3">
-                            <label for="consulta-CURP" class="form-label">CURP</label>
+                            <label for="consulta-CURP" class="form-label">CURP:</label>
                             <input type="text" class="form-control" id="consulta-CURP" placeholder="Ingresa tu CURP">
+                            <div class="invalid-feedback">
+                                Ingrese una CURP valida.
+                            </div>
                         </div>
-
+                        
                         <div class="mb-3">
                             <button type="button" class="btn btn-outline-danger">Confirmar</button>
                         </div>
 
+                        <hr/>
+                        
                     </form>
 
                 </div>
 
-                <div class="container-form_generator">
+                <div class="container-form_generar hide">
 
                     <form action="" class="form_consulta">
 
                         <h2>Generar</h2>
 
+                        
                         <div class="mb-3">
-                            <label for="imagen" class="form-label">Foto</label>
+                            <label for="imagen" class="form-label">Foto:</label>
                             <input class="form-control" type="file" id="imagen">
+                            <div class="invalid-feedback">
+                                Ingrese una imagen valida.
+                            </div>
                         </div>
-
+                        
                         <div class="mb-3">
-                            <label for="generator-NoContol" class="form-label">Numero de control</label>
+                            <label for="generator-NoContol" class="form-label">Numero de control:</label>
                             <input type="text" class="form-control" id="generator-NoControl" placeholder="Ingresa tu numero de control">
+                            <div class="invalid-feedback">
+                                Ingrese un Numero de control valido.
+                            </div>
                         </div>
 
                         <div class="mb-3">
-                            <label for="generator-CURP" class="form-label">CURP</label>
+                            <label for="generator-CURP" class="form-label">CURP:</label>
                             <input type="text" class="form-control" id="generator-CURP" placeholder="Ingresa tu CURP">
+                            <div class="invalid-feedback">
+                                Ingrese una CURP valida.
+                            </div>
                         </div>
-
+                        
                         <div class="mb-3">
                             <button type="button" class="btn btn-outline-danger">Confirmar</button>
                         </div>
+                        
+                        <hr/>
 
                     </form>
 
@@ -148,19 +170,23 @@
                     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h1 class="modal-title fs-5" id="exampleModalLabel">Iniciar Sección</h1>
+                                <h1 class="modal-title fs-5">Iniciar Sesión</h1>
                             </div>
                             <div class="modal-body">
+
+                                <!-- este mensaje solo se mostrara si se intenta inciar sesión con un usuario invalido --------------------------------------------- -->
+                                <!-- <h6>Usuario o contraseña no son validos.</h6> -->
+
                                 <form style="max-width: 450px" action="" method="post">
 
                                     <div class="mb-3">
-                                        <label for="generator-NoContol" class="form-label">Ingrese tu nombre de usuario</label>
-                                        <input type="text" class="form-control" id="generator-NoControl" placeholder="Ingresa tu numero de control">
+                                        <label for="generator-NoContol" class="form-label">Usuario:</label>
+                                        <input type="text" class="form-control" id="generator-NoControl" placeholder="Ingresa tu nombre de usuario">
                                     </div>
 
                                     <div class="mb-3">
-                                        <label for="generator-CURP" class="form-label">Ingrese tu contraseña</label>
-                                        <input type="text" class="form-control" id="generator-CURP" placeholder="Ingresa tu CURP">
+                                        <label for="generator-CURP" class="form-label">Contraseña:</label>
+                                        <input type="text" class="form-control" id="generator-CURP" placeholder="Ingresa tu contraseña">
                                     </div>
 
                                 </form>
@@ -189,6 +215,7 @@
         </footer>
 
         <script src="./js/js-bootstrap/bootstrap.min.js"></script>
+        <script src="./js/index.js"></script>
         
     </body>
 </html>
