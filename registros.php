@@ -41,12 +41,7 @@
         <link rel="stylesheet" href="./css/registros.css">
         <title>Registros</title>
     </head>
-    <body class="<?php 
-    
-        if ($userInfo['tema'] == 2)
-        echo 'lightMode';
-
-    ?>">
+    <body class="lightMode">
         
         <header>
 
@@ -100,6 +95,12 @@
                         </svg>
                     </button>
                     <div class="clear"></div>
+                        <div class="container-switch">
+                            <button class="switch" id="switch">
+                                <span><i class="fas fa-sun"></i></span>
+                                <span><i class="fas fa-moon"></i></span>
+                            </button>
+                        </div>
                 </div>
 
                 <div class="container-options_tabla_alumnos">
@@ -134,7 +135,7 @@
                     <div class="container-tabla_alumnos table-responsive">
 
                         
-                        <table class="table table-dark table-striped table-sm table-hover">
+                        <table class="table  table-striped table-sm table-hover">
 
                             <thead>
 
@@ -223,7 +224,7 @@
                     <div class="container-tabla_user table-responsive">
 
                         
-                        <table class="table table-dark table-striped table-sm table-hover">
+                        <table class="table  table-striped table-sm table-hover">
 
                             <thead>
 
@@ -292,10 +293,10 @@
                                 <label class="input-group-text" for="options-filtro_historial_publico">Filtros</label>
                                 <select class="form-select" id="options-filtro_historial_publico">
                                     <option selected></option>
-                                    <option value="1">NoRegistro</option>
-                                    <option value="2">Acción</option>
-                                    <option value="3">Alumno</option>
-                                    <option value="4">fecha</option>
+                                    <option value="NoRegistro">NoRegistro</option>
+                                    <option value="Accion">Acción</option>
+                                    <option value="alumno">Alumno</option>
+                                    <option value="fecha">fecha</option>
                                 </select>
                             </div>
 
@@ -307,7 +308,7 @@
                         </div>
 
                         <div class="table-responsive">
-                            <table class="table table-dark table-striped table-sm table-hover">
+                            <table class="table  table-striped table-sm table-hover">
                                 <thead>
                                     <tr>
                                         <th>NoRegistro</th>
@@ -316,13 +317,27 @@
                                         <th>fecha</th>
                                     </tr>
                                 </thead>
-                                <tbody class="table-group-divider">
-                                    <tr>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                    </tr>
+                                <tbody id="container_historial_alumnos" class="table-group-divider">
+                                
+                                        <?php
+                                        
+                                            foreach($consulta->getHistorialAlumnos() as $registro){
+
+                                                ?>
+                                                
+                                                    <tr>
+                                                        <td><?php echo $registro['NoRegistro']; ?></td>
+                                                        <td><?php echo $registro['accion']; ?></td>
+                                                        <td><?php echo $registro['NoControl'] . '<br>' . $registro['nombre'] . ' ' . $registro['ap_paterno'] . ' ' . $registro['ap_materno']; ?></td>
+                                                        <td><?php echo $registro['fecha']; ?></td>
+                                                    </tr>
+                                                
+                                                <?php
+
+                                            }
+
+                                        ?>
+
                                 </tbody>
                             </table>
                         </div>
@@ -340,10 +355,10 @@
                                 <label class="input-group-text" for="options-filtro_historial_usuario">Filtros</label>
                                 <select class="form-select" id="options-filtro_historial_usuario">
                                     <option selected></option>
-                                    <option value="1">NoRegistro</option>
-                                    <option value="2">Acción</option>
-                                    <option value="3">Usuario</option>
-                                    <option value="4">fecha</option>
+                                    <option value="NoRegistro">NoRegistro</option>
+                                    <option value="movimiento">Acción</option>
+                                    <option value="usuario">Usuario</option>
+                                    <option value="fecha">fecha</option>
                                 </select>
                             </div>
 
@@ -355,7 +370,7 @@
                         </div>
                         
                         <div class="table-responsive">
-                            <table class="table table-dark table-striped table-sm table-hover">
+                            <table class="table  table-striped table-sm table-hover">
                                 <thead>
                                     <tr>
                                         <th>NoRegistro</th>
@@ -364,13 +379,25 @@
                                         <th>fecha</th>
                                     </tr>
                                 </thead>
-                                <tbody class="table-group-divider">
-                                    <tr>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                    </tr>
+                                <tbody id="container_historial_users" class="table-group-divider">
+                                    <?php
+                                    
+                                        foreach($consulta->getHistorialUsers() as $registro){
+                                            
+                                            ?>
+                                            
+                                                <tr>
+                                                    <td><?php echo $registro['NoRegistro']; ?></td>
+                                                    <td><?php echo $registro['movimiento']; ?></td>
+                                                    <td><?php echo $registro['ID'] . '<br>' . $registro['user']; ?></td>
+                                                    <td><?php echo $registro['fecha']; ?></td>
+                                                </tr>
+                                            
+                                            <?php
+
+                                        }
+                                    
+                                    ?>
                                 </tbody>
                             </table>
                         </div>

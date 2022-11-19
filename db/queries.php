@@ -37,7 +37,7 @@
         }
 
         public function getUserInfo($id){
-            $query = $this->connect()->prepare("SELECT ID, user, nombre, ap_paterno, ap_materno, telefono, mail, nombreRol, tema, estado FROM usuarios, roles WHERE usuarios.ID = $id AND usuarios.rol = roles.NoRol;");
+            $query = $this->connect()->prepare("SELECT ID, user, nombre, ap_paterno, ap_materno, telefono, mail, nombreRol, estado FROM usuarios, roles WHERE usuarios.ID = $id AND usuarios.rol = roles.NoRol;");
             $query->execute();
             foreach($query as $registro){
                 $datos = [
@@ -49,7 +49,6 @@
                     'telefono'      => $registro['telefono'],
                     'mail'          => $registro['mail'],
                     'rol'           => $registro['nombreRol'],
-                    'tema'          => $registro['tema'],
                     'estado'        => $registro['estado']
                 ];
             }
@@ -75,19 +74,23 @@
             return $datos;
         }
 
-        public function getUsersInfo($id){
-            return $this->connect()->query("SELECT ID, user, nombre, ap_paterno, ap_materno, telefono, mail, nombreRol, estado FROM usuarios, roles WHERE usuarios.rol = roles.NoRol and usuarios.ID <> $id;");
+        public function getHistorialAlumnos(){
+            return $this->connect()->query("SELECT NoRegistro, accion, NoControl, nombre, ap_paterno, ap_materno, fecha FROM consultaspublic, alumnos WHERE consultaspublic.usuario = alumnos.NoControl ORDER BY consultaspublic.NoRegistro DESC;");
+        }
+        
+        public function getHistorialUsers(){
+            return $this->connect()->query("SELECT NoRegistro, movimiento, ID, user, fecha FROM movimientosuser, usuarios WHERE movimientosuser.usuario = usuarios.ID ORDER BY movimientosuser.NoRegistro DESC;");
         }
 
-        public function getUserFiltro($consulta){
-            return $this->connect()->query("".$consulta."");
+        public function getUsersInfo($id){
+            return $this->connect()->query("SELECT ID, user, nombre, ap_paterno, ap_materno, telefono, mail, nombreRol, estado FROM usuarios, roles WHERE usuarios.rol = roles.NoRol and usuarios.ID <> $id;");
         }
 
         public function getAlumnosInfo(){
             return $this->connect()->query("SELECT NoControl, nombre, ap_paterno, ap_materno, nombreEspecialidad, curp, generacion, NSS, estado FROM alumnos, especialidades WHERE alumnos.especialidad = especialidades.NoEspecialidad;");
         }
 
-        public function getAlumnosFiltro($consulta){
+        public function consultaFiltro($consulta){
             return $this->connect()->query("".$consulta."");
         }
 
@@ -102,7 +105,7 @@
     if (isset($_POST['consulta_filtro_user'])){
         $filtro = $_POST['consulta_filtro_user'];
         $tabla = '';
-        foreach($consulta->getUserFiltro($filtro) as $registro){
+        foreach($consulta->consultaFiltro($filtro) as $registro){
             $tabla .= '
             <tr class="Registro_usuario" id="'. $registro['ID'] .'" data-bs-toggle="modal" data-bs-target="#form-modificar_usuario-modal">
                 <td id="'. $registro['ID'] .'">'.$registro['ID'].'</td>
@@ -130,7 +133,7 @@
     if (isset($_POST['consulta_filtro_alumno'])){
         $filtro = $_POST['consulta_filtro_alumno'];
         $tabla = '';
-        foreach($consulta->getAlumnosFiltro($filtro) as $registro){
+        foreach($consulta->consultaFiltro($filtro) as $registro){
             $tabla .= '
             <tr class="Registro_alumno" id="'. $registro['NoControl'] .'" data-bs-toggle="modal" data-bs-target="#form-modificar_alumno-modal">
                 <td id="'. $registro['NoControl'] .'">'.$registro['NoControl'].'</td>
@@ -152,6 +155,38 @@
             <td colspan="8" class="table-active" data-bs-toggle="modal" data-bs-target="#form-insertar_alumno-modal">Insertar Nuevo Alumno</td>
         </tr>
         ';
+        echo json_encode($tabla);
+    }
+
+    if (isset($_POST['consulta_filtro_historial_alumno'])){
+        $filtro = $_POST['consulta_filtro_historial_alumno'];
+        $tabla = '';
+        foreach($consulta->consultaFiltro($filtro) as $registro){
+            $tabla .= '
+            <tr>
+                <td>'. $registro['NoRegistro'] .'</td>
+                <td>'. $registro['accion'] .'</td>
+                <td>'. $registro['NoControl'] .'<br>'. $registro['nombre'] .' '. $registro['ap_paterno'] .' '.  $registro['ap_materno'] .'</td>
+                <td>'. $registro['fecha'] .'</td>
+            </tr>
+            ';
+        }
+        echo json_encode($tabla);
+    }
+
+    if (isset($_POST['consulta_filtro_historial_users'])){
+        $filtro = $_POST['consulta_filtro_historial_users'];
+        $tabla = '';
+        foreach($consulta->consultaFiltro($filtro) as $registro){
+            $tabla .= '
+            <tr>
+                <td>'. $registro['NoRegistro'] .'</td>
+                <td>'. $registro['movimiento'] .'</td>
+                <td>'. $registro['ID'] .'<br>'. $registro['user'] .'</td>
+                <td>'. $registro['fecha'] .'</td>
+            </tr>
+            ';
+        }
         echo json_encode($tabla);
     }
 

@@ -6,6 +6,7 @@ const btn_submit_login = document.querySelector('#submitLogin');
 const btn_logout_session = document.querySelector('.container-button_logout button');
 const btn_registros = document.querySelector('.container-button_confi button');
 const btn_mostrar_form_login = document.querySelector('.container-button_login button');
+const btnSwitch = document.querySelector('#switch');
 // -------------------------------------------------------------------------------
 
 // inputs -------------------------------------------------
@@ -33,6 +34,15 @@ const userLogin = {
 // -------------------------------------------------
 
 // funciones ---------------------------------------
+btnSwitch.addEventListener('click', () => {
+	document.body.classList.toggle('lightMode');
+	btnSwitch.classList.toggle('active');
+	if(document.body.classList.contains('lightMode')){
+		localStorage.setItem('dark-mode', 'false');
+	} else {
+		localStorage.setItem('dark-mode', 'true');
+	}
+});
 const changeForms = function (){
     form_consultar.classList.toggle('hide');
     form_generar.classList.toggle('hide');
@@ -95,3 +105,11 @@ if (btn_logout_session != null){
     btn_registros.addEventListener('click', registros);
 }
 // -------------------------------------------------
+
+if(localStorage.getItem('dark-mode') === 'true'){
+	document.body.classList.remove('lightMode');
+	btnSwitch.classList.add('active');
+} else {
+	document.body.classList.add('lightMode');
+	btnSwitch.classList.remove('active');
+}

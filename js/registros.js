@@ -1,19 +1,43 @@
 // buttons ---------------------------------------------------------------------------
 const btn_logout_session = document.querySelector('.container-button_logout button');
 const btn_back = document.querySelector('.container-button_back button');
+
 const buttons_Usuarios = document.querySelectorAll('.Registro_usuario');
 const buttons_Alumnos = document.querySelectorAll('.Registro_alumno');
-const inputs_form_modificar_usuario = document.querySelector('.form-modificar_usuario');
+const btnSwitch = document.querySelector('#switch');
 // -----------------------------------------------------------------------------------
 
 // inputs ----------------------------------------------------------------------------
 const input_select_filtro_alumnos = document.querySelector('#options-filtro_alumnos');
 const input_filtro_alumnos = document.querySelector('#filtro_alumno');
+
 const input_select_filtro_users = document.querySelector('#options-filtro_user');
 const input_filtro_users = document.querySelector('#filtro_user');
+
+const input_select_filtro_historial_alumnos = document.querySelector('#options-filtro_historial_publico');
+const input_filtro_historial_alumnos = document.querySelector('#filtro_historial_publico');
+
+const input_select_filtro_historial_users = document.querySelector('#options-filtro_historial_usuario');
+const input_filtro_historial_users = document.querySelector('#filtro_historial_usuario');
+// -----------------------------------------------------------------------------------
+
+// table -----------------------------------------------------------------------------
+const tablas = document.querySelectorAll('.table-responsive table');
 // -----------------------------------------------------------------------------------
 
 // funciones -------------------------------------------------------------------------
+btnSwitch.addEventListener('click', () => {
+	document.body.classList.toggle('lightMode');
+	btnSwitch.classList.toggle('active');
+    tablas.forEach((e) => {
+        e.classList.toggle('table-dark');
+    });
+	if(document.body.classList.contains('lightMode')){
+		localStorage.setItem('dark-mode', 'false');
+	} else {
+		localStorage.setItem('dark-mode', 'true');
+	}
+});
 const updateForm_modificar_usuario = function (e){
     let id_consultar_usuario = e.target.id;
     $.ajax({
@@ -55,6 +79,8 @@ const updateForm_modificar_alumno = function (e){
             $("#options-ESP-modificar_alumno option[value=4]").attr("selected",false);
             $("#options-ESP-modificar_alumno option[value=5]").attr("selected",false);
             $("#options-ESP-modificar_alumno option[value=6]").attr("selected",false);
+            $("#options-estado-modificar_alumno option[value=1]").attr("selected",false);
+            $("#options-estado-modificar_alumno option[value=0]").attr("selected",false);
             $('#nombre-modificar_alumno').val(request.nombre);
             $('#apP-modificar_alumno').val(request.ap_paterno);
             $('#apM-modificar_alumno').val(request.ap_materno);
@@ -81,7 +107,7 @@ const updateForm_modificar_alumno = function (e){
                     $("#options-ESP-modificar_alumno option[value=6]").attr("selected",true);
                 break;
             }
-            $("#options-estado-modificar_estado option[value="+ request.estado +"]").attr("selected",true);
+            $("#options-estado-modificar_alumno option[value="+ request.estado +"]").attr("selected",true);
         }
     });
 }
@@ -143,6 +169,46 @@ const filtrar_tabla_alumno = function () {
         }
     });
 }
+const filtrar_tabla_historial_alumnos  = function (){
+    const filtro = '%' + input_filtro_historial_alumnos.value.replace(/\s+/g, ' ') + '%';
+    let consulta_filtro_historial_alumno = '';
+    if (input_select_filtro_historial_alumnos.value == ''){    
+        consulta_filtro_historial_alumno = `SELECT NoRegistro, accion, NoControl, nombre, ap_paterno, ap_materno, fecha FROM consultaspublic, alumnos WHERE (consultaspublic.usuario = alumnos.NoControl) AND (consultaspublic.NoRegistro LIKE'${filtro}' OR consultaspublic.accion LIKE'${filtro}' OR consultaspublic.fecha LIKE'${filtro}' OR alumnos.NoControl LIKE'${filtro}' OR alumnos.nombre LIKE'${filtro}' OR alumnos.ap_paterno LIKE'${filtro}' OR alumnos.ap_materno LIKE'${filtro}') ORDER BY consultaspublic.NoRegistro DESC;`;
+    }else if (input_select_filtro_historial_alumnos.value == 'alumno'){
+        consulta_filtro_historial_alumno = `SELECT NoRegistro, accion, NoControl, nombre, ap_paterno, ap_materno, fecha FROM consultaspublic, alumnos WHERE (consultaspublic.usuario = alumnos.NoControl) AND (alumnos.NoControl LIKE'${filtro}' OR alumnos.nombre LIKE'${filtro}' OR alumnos.ap_paterno LIKE'${filtro}' OR alumnos.ap_materno LIKE'${filtro}') ORDER BY consultaspublic.NoRegistro DESC;`;
+    }else{
+        consulta_filtro_historial_alumno = `SELECT NoRegistro, accion, NoControl, nombre, ap_paterno, ap_materno, fecha FROM consultaspublic, alumnos WHERE (consultaspublic.usuario = alumnos.NoControl) AND (consultaspublic.${input_select_filtro_historial_alumno.value} LIKE'${filtro}') ORDER BY consultaspublic.NoRegistro DESC;`;
+    }
+    $.ajax({
+        url:'./db/queries.php',
+        type: 'POST',
+        data: {consulta_filtro_historial_alumno: consulta_filtro_historial_alumno},
+        success: function (respuesta) {
+            let request = JSON.parse(respuesta);
+            $('#container_historial_alumnos').html(request);
+        }
+    });
+}
+const filtrar_tabla_historial_users = function (){
+    const filtro = '%' + input_filtro_historial_users.value.replace(/\s+/g, ' ') + '%';
+    let consulta_filtro_historial_users = '';
+    if (input_select_filtro_historial_users.value == ''){    
+        consulta_filtro_historial_users = `SELECT NoRegistro, movimiento, ID, user, fecha FROM movimientosuser, usuarios WHERE (movimientosuser.usuario = usuarios.ID) AND (movimientosuser.NoRegistro LIKE'${filtro}' OR movimientosuser.movimiento LIKE'${filtro}' OR movimientosuser.fecha LIKE'${filtro}' OR usuarios.ID LIKE'${filtro}' OR usuarios.user LIKE'${filtro}') ORDER BY movimientosuser.NoRegistro DESC;`;
+    }else if (input_select_filtro_historial_users.value == 'usuario'){
+        consulta_filtro_historial_users = `SELECT NoRegistro, movimiento, ID, user, fecha FROM movimientosuser, usuarios WHERE (movimientosuser.usuario = usuarios.ID) AND (usuarios.ID LIKE'${filtro}' OR usuarios.user LIKE'${filtro}') ORDER BY movimientosuser.NoRegistro DESC;`;
+    }else{
+        consulta_filtro_historial_users = `SELECT NoRegistro, movimiento, ID, user, fecha FROM movimientosuser, usuarios WHERE (movimientosuser.usuario = usuarios.ID) AND (movimientosuser.${input_select_filtro_historial_users.value} LIKE'${filtro}');`;
+    }
+    $.ajax({
+        url:'./db/queries.php',
+        type: 'POST',
+        data: {consulta_filtro_historial_users: consulta_filtro_historial_users},
+        success: function (respuesta) {
+            let request = JSON.parse(respuesta);
+            $('#container_historial_users').html(request);
+        }
+    });
+}
 // -----------------------------------------------------------------------------------
 
 // escuchadores ----------------------------------------------------------------------
@@ -160,9 +226,34 @@ input_select_filtro_alumnos.addEventListener('click', filtrar_tabla_alumno);
 input_select_filtro_alumnos.addEventListener('focus', filtrar_tabla_alumno);
 input_select_filtro_alumnos.addEventListener('blur', filtrar_tabla_alumno);
 
-input_filtro_users.addEventListener('keypress', filtrar_tabla_user);
-input_filtro_users.addEventListener('keyup', filtrar_tabla_user);
-input_select_filtro_users.addEventListener('focus', filtrar_tabla_user);
-input_select_filtro_users.addEventListener('click', filtrar_tabla_user);
-input_select_filtro_users.addEventListener('blur', filtrar_tabla_user);
+input_filtro_users.addEventListener(        'keypress',     filtrar_tabla_user);
+input_filtro_users.addEventListener(        'keyup',        filtrar_tabla_user);
+input_select_filtro_users.addEventListener( 'focus',        filtrar_tabla_user);
+input_select_filtro_users.addEventListener( 'click',        filtrar_tabla_user);
+input_select_filtro_users.addEventListener( 'blur',         filtrar_tabla_user);
+
+
+input_filtro_historial_alumnos.addEventListener(       'keypress',     filtrar_tabla_historial_alumnos);
+input_filtro_historial_alumnos.addEventListener(       'keyup',        filtrar_tabla_historial_alumnos);
+input_select_filtro_historial_alumnos.addEventListener( 'focus',        filtrar_tabla_historial_alumnos);
+input_select_filtro_historial_alumnos.addEventListener( 'click',        filtrar_tabla_historial_alumnos);
+input_select_filtro_historial_alumnos.addEventListener( 'blur',         filtrar_tabla_historial_alumnos);
+
+input_filtro_historial_users.addEventListener(        'keypress',     filtrar_tabla_historial_users);
+input_filtro_historial_users.addEventListener(        'keyup',        filtrar_tabla_historial_users);
+input_select_filtro_historial_users.addEventListener( 'focus',        filtrar_tabla_historial_users);
+input_select_filtro_historial_users.addEventListener( 'click',        filtrar_tabla_historial_users);
+input_select_filtro_historial_users.addEventListener( 'blur',         filtrar_tabla_historial_users);
 // -----------------------------------------------------------------------------------
+
+
+if(localStorage.getItem('dark-mode') === 'true'){
+	document.body.classList.remove('lightMode');
+	btnSwitch.classList.add('active');
+    tablas.forEach((e) => {
+        e.classList.toggle('table-dark');
+    });
+} else {
+	document.body.classList.add('lightMode');
+	btnSwitch.classList.remove('active');
+}
