@@ -8,6 +8,11 @@
     padding: 0;
 }
 
+.clear {
+    clear: both;
+    width: 100%;
+}
+
 body {
     font-family: 'Inter', serif;
     height: 100vh;
@@ -35,9 +40,9 @@ body {
 }
 
 header {
-    width: 100vw;
+    width: 100%;
     height: 6rem;
-    padding: .5rem;
+    padding-top: .5rem;
     margin-bottom: 2rem;
     background-color: rgb(11, 11, 11);
     body.lightMode &{
@@ -69,7 +74,7 @@ header {
     & a {
         text-decoration: none;
     }
-    & h2{
+    & h2 {
         font-size: 1.7rem;
         font-weight: 700;
         color: #fff;
@@ -96,38 +101,92 @@ header {
     margin-right: 1rem;
 }
 
-.container-titlePrincipal {
-    & h1{
-        user-select: none;
-        color: #fff;
-        body.lightMode &{
-            color: #000
-        }
-    }
-}
-
-.container-buttons {
-    display: flex;
-    margin-top: 2rem;
-    & div{
-        margin-right: 1.5rem;
-    }
-}
-
 hr {
     box-sizing: content-box;
     color: #fff;
     body.lightMode &{
         color: #000
     }
+    &.divTabla{
+        display: none;
+    }
 }
 
-form {
+.container-button_back {
+    & button{
+        float: right;
+    }
+}
+
+.container-options_tabla_alumnos{
+    & .container-tabla_alumnos {
+        max-width: 100%;
+        max-height: 450px;
+        & #insertAlumno th{
+            text-align: center;
+            & + td {
+                user-select: none;
+                cursor: pointer;
+            }
+        }
+    }
+}
+.estado {
+    text-align: center;
+}
+.container-options_tabla_user{
+    & .container-tabla_user {
+        max-width: 100%;
+        max-height: 450px;
+        & #insertUser th{
+            text-align: center;
+            & + td {
+                user-select: none;
+                cursor: pointer;
+            }
+        }
+    }
+}
+
+.container-filtro_alumnos,
+.container-filtro_user {
     max-width: 500px;
-    margin: 0 auto;
     color: #fff;
-    user-select: none;
-    & .form-control {
+}
+
+
+.container-filtro_historial_publico,
+.container-filtro_historial_usuarios {
+    max-width: 300px;
+    color: #fff;
+    margin-bottom: 1rem;
+}
+
+.table-responsive{
+    &::-webkit-scrollbar {
+        width: 10px;
+        height: 7px;
+        background: #f1f1f1;
+    }
+    
+    &::-webkit-scrollbar-thumb {
+        background: rgb(168, 168, 168);
+        border-radius: 5px;
+    }
+}
+
+form,
+.form {
+    & h2,h3,h4,h5,h6 {
+        color: #fff;
+    }
+    & .input-group-text{
+        color: #fff;
+        background: rgb(63, 65, 70);
+        border: none;
+    }
+    & .form-control, 
+    .form-select {
         color: #fff;
         background: rgb(41, 42, 45);
         border: none;
@@ -141,7 +200,16 @@ form {
     }
     body.lightMode &{
         color: #000;
-        & .form-control {
+        & h2,h3,h4,h5,h6 {
+            color: rgb(0, 0, 0);
+        }
+        & .input-group-text{
+            color: rgb(0, 0, 0);
+            background: rgb(233, 236, 239);
+            border:1px solid rgb(175, 175, 175);
+        }
+        & .form-control, 
+        .form-select {
             color: #000;
             background: #cdcdcd;
             border:1px solid rgb(175, 175, 175);
@@ -154,14 +222,24 @@ form {
         }
     }
 }
-
-.hide {
-    display: none;
+.container-historiales{
+    width: 100%;
 }
+
+.container-historial_usuarios,
+.container-historial_usuarios_publicos{
+    width: calc(50% - 2rem);
+    float: left;
+    margin-right: 1rem;
+    margin-left: 1rem;
+}
+
+
 
 .modal-content {
     background: rgb(19, 19, 19);
     color: #fff;
+    user-select: none;
     body.lightMode &{
         background: #e6e6e6;
         color: #000;
@@ -172,6 +250,30 @@ form {
     }
 }
 
+@media only screen and (max-width:900px) {
+    
+    .container-center {
+        max-width: 1300px;
+        width: 100%;
+        margin: 0 auto;
+        padding: 0 1rem;
+    }
+    
+    hr {
+        &.divTabla{
+            display: inline-block;
+            width: 100%;
+        }
+    }
+
+    .container-historial_usuarios,
+    .container-historial_usuarios_publicos{
+        width: calc(100% - 2rem);
+        margin-right: 0rem;
+        margin-left: 0rem;
+    }
+
+}
 @media only screen and (max-width:500px) {
 
     header {
@@ -196,10 +298,12 @@ form {
     .conatiner-title-header {
         margin-right: 0;
     }
+    
 }
-@media only screen and (max-width:390px) {
+@media only screen and (max-width:376px) {
     .container-button_confi,
     .container-button_logout {
         margin-top: 0.2rem;
     }
+
 }
