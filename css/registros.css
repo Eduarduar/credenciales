@@ -112,6 +112,9 @@ hr.divTabla {
   display: none;
 }
 
+.container-button_back {
+  margin-bottom: 0.5rem;
+}
 .container-button_back button {
   float: right;
 }
@@ -154,6 +157,10 @@ hr.divTabla {
 .container-filtro_user {
   max-width: 500px;
   color: #fff;
+}
+.container-filtro_alumnos h4,
+.container-filtro_user h4 {
+  margin-bottom: 1.2rem;
 }
 
 .container-filtro_historial_publico,
@@ -286,6 +293,55 @@ body.lightMode .modal-content {
 }
 .modal-content .modal-body h6 {
   color: rgb(255, 0, 4);
+}
+
+.container-switch {
+  position: relative;
+  bottom: -1rem;
+  right: -0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.switch {
+  background: orange;
+  border-radius: 1000px;
+  border: none;
+  position: relative;
+  cursor: pointer;
+  display: flex;
+  outline: none;
+  transition: 0.3s;
+  height: 30px;
+}
+.switch::after {
+  content: "";
+  display: block;
+  width: 30px;
+  height: 30px;
+  position: absolute;
+  background: rgba(241, 241, 241, 0.5254901961);
+  top: 0;
+  left: 0;
+  right: unset;
+  border-radius: 100px;
+  transition: 0.3s ease all;
+  box-shadow: 0px 0px 2px 2px rgba(0, 0, 0, 0.2);
+}
+.switch.active {
+  background: #343D5B;
+  color: #000;
+}
+.switch.active::after {
+  right: 0;
+  left: unset;
+}
+.switch span {
+  width: 30px;
+  height: 30px;
+  line-height: 30px;
+  display: block;
+  background: none;
+  color: #fff;
 }
 
 @media only screen and (max-width: 900px) {

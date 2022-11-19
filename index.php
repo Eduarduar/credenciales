@@ -42,7 +42,7 @@
         <link rel="stylesheet" href="./css/index.css">
         <title>Credenciales</title>
     </head>
-    <body class="">
+    <body class="lightMode">
 
         <header>
 
@@ -141,6 +141,12 @@
 
                         <button type="button" id="GC" class="btn btn-secondary">Generar tu credencial</button>
 
+                    </div>
+                    <div class="container-switch">
+                        <button class="switch" id="switch">
+                            <span><i class="fas fa-sun"></i></span>
+                            <span><i class="fas fa-moon"></i></span>
+                        </button>
                     </div>
 
                 </div>
