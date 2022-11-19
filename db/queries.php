@@ -26,11 +26,137 @@
             }
             return false;
         }
+        
+        public function confirmarUserById($id){
+            $query = $this->connect()->prepare("SELECT ID FROM usuarios WHERE ID = $id");
+            $query->execute();
+            if ($query->rowCount()){
+                return true;
+            }
+            return false;
+        }
 
-        public function getIdUser(){
+        public function getUserInfo($id){
+            $query = $this->connect()->prepare("SELECT ID, user, nombre, ap_paterno, ap_materno, telefono, mail, nombreRol, tema, estado FROM usuarios, roles WHERE usuarios.ID = $id AND usuarios.rol = roles.NoRol;");
+            $query->execute();
+            foreach($query as $registro){
+                $datos = [
+                    'id'            => $registro['ID'],
+                    'user'          => $registro['user'],
+                    'nombre'        => $registro['nombre'],
+                    'ap_paterno'    => $registro['ap_paterno'],
+                    'ap_materno'    => $registro['ap_materno'],
+                    'telefono'      => $registro['telefono'],
+                    'mail'          => $registro['mail'],
+                    'rol'           => $registro['nombreRol'],
+                    'tema'          => $registro['tema'],
+                    'estado'        => $registro['estado']
+                ];
+            }
+            return $datos;
+        }
 
+        public function getAlumnoInfo($NoControl){
+            $query = $this->connect()->prepare("SELECT NoControl, nombre, ap_paterno, ap_materno, nombreEspecialidad, curp, generacion, NSS, estado FROM alumnos, especialidades WHERE alumnos.NoControl = $NoControl AND alumnos.especialidad = especialidades.NoEspecialidad;");
+            $query->execute();
+            foreach($query as $registro){
+                $datos = [
+                    'NoControl'     => $registro['NoControl'],
+                    'nombre'        => $registro['nombre'],
+                    'ap_paterno'    => $registro['ap_paterno'],
+                    'ap_materno'    => $registro['ap_materno'],
+                    'ESP'           => $registro['nombreEspecialidad'],
+                    'curp'          => $registro['curp'],
+                    'generacion'    => $registro['generacion'],
+                    'NSS'           => $registro['NSS'],
+                    'estado'        => $registro['estado']
+                ];
+            }
+            return $datos;
+        }
+
+        public function getUsersInfo($id){
+            return $this->connect()->query("SELECT ID, user, nombre, ap_paterno, ap_materno, telefono, mail, nombreRol, estado FROM usuarios, roles WHERE usuarios.rol = roles.NoRol and usuarios.ID <> $id;");
+        }
+
+        public function getUserFiltro($consulta){
+            return $this->connect()->query("".$consulta."");
+        }
+
+        public function getAlumnosInfo(){
+            return $this->connect()->query("SELECT NoControl, nombre, ap_paterno, ap_materno, nombreEspecialidad, curp, generacion, NSS, estado FROM alumnos, especialidades WHERE alumnos.especialidad = especialidades.NoEspecialidad;");
+        }
+
+        public function getAlumnosFiltro($consulta){
+            return $this->connect()->query("".$consulta."");
         }
 
     }
-?>
 
+    $consulta = new consultas();
+
+    if (isset($_POST['id_consultar_usuario'])){
+        echo json_encode($consulta->getUserInfo($_POST['id_consultar_usuario']));
+    }
+
+    if (isset($_POST['consulta_filtro_user'])){
+        $filtro = $_POST['consulta_filtro_user'];
+        $tabla = '';
+        foreach($consulta->getUserFiltro($filtro) as $registro){
+            $tabla .= '
+            <tr class="Registro_usuario" id="'. $registro['ID'] .'" data-bs-toggle="modal" data-bs-target="#form-modificar_usuario-modal">
+                <td id="'. $registro['ID'] .'">'.$registro['ID'].'</td>
+                <td id="'. $registro['ID'] .'">'.$registro['user'].'</td>
+                <td id="'. $registro['ID'] .'">'.$registro['nombre'].'</td>
+                <td id="'. $registro['ID'] .'">'.$registro['ap_paterno'].'</td>
+                <td id="'. $registro['ID'] .'">'.$registro['ap_materno'].'</td>
+                <td id="'. $registro['ID'] .'">'.$registro['mail'].'</td>
+                <td id="'. $registro['ID'] .'">'.$registro['telefono'].'</td>
+                <td id="'. $registro['ID'] .'">'.$registro['nombreRol'].'</td>
+                <td class="estado" id="'. $registro['ID'] .'">'.$registro['estado'].'</td>
+            </tr>
+            ';
+        }
+
+        $tabla.= '
+        <tr id="insertUser">
+            <th scope="row" data-bs-toggle="modal" data-bs-target="#form-insertar_usuario-modal"><svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg></th>
+            <td colspan="8" class="table-active" data-bs-toggle="modal" data-bs-target="#form-insertar_usuario-modal" >Insertar Nuevo Usuario</td>
+        </tr>
+        ';
+        echo json_encode($tabla);
+    }
+
+    if (isset($_POST['consulta_filtro_alumno'])){
+        $filtro = $_POST['consulta_filtro_alumno'];
+        $tabla = '';
+        foreach($consulta->getAlumnosFiltro($filtro) as $registro){
+            $tabla .= '
+            <tr class="Registro_alumno" id="'. $registro['NoControl'] .'" data-bs-toggle="modal" data-bs-target="#form-modificar_alumno-modal">
+                <td id="'. $registro['NoControl'] .'">'.$registro['NoControl'].'</td>
+                <td id="'. $registro['NoControl'] .'">'.$registro['nombre'].'</td>
+                <td id="'. $registro['NoControl'] .'">'.$registro['ap_paterno'].'</td>
+                <td id="'. $registro['NoControl'] .'">'.$registro['ap_materno'].'</td>
+                <td id="'. $registro['NoControl'] .'">'.$registro['nombreEspecialidad'].'</td>
+                <td id="'. $registro['NoControl'] .'">'.$registro['curp'].'</td>
+                <td id="'. $registro['NoControl'] .'">'.$registro['generacion'].'</td>
+                <td id="'. $registro['NoControl'] .'">'.$registro['NSS'].'</td>
+                <td class="estado" id="'. $registro['NoControl'] .'">'.$registro['estado'].'</td>
+            </tr>
+            ';
+        }
+
+        $tabla.= '
+        <tr id="insertAlumno">
+            <th scope="row" data-bs-toggle="modal" data-bs-target="#form-insertar_alumno-modal"><svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg></th>
+            <td colspan="8" class="table-active" data-bs-toggle="modal" data-bs-target="#form-insertar_alumno-modal">Insertar Nuevo Alumno</td>
+        </tr>
+        ';
+        echo json_encode($tabla);
+    }
+
+    if (isset($_POST['NoControl_consultar_alumno'])){
+        echo json_encode($consulta->getAlumnoInfo($_POST['NoControl_consultar_alumno']));
+    }
+
+?>

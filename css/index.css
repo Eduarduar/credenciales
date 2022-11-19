@@ -12,6 +12,15 @@ body {
 body.lightMode {
   background-color: #e6e6e6;
 }
+body::-webkit-scrollbar {
+  width: 10px;
+  height: 7px;
+  background: #f1f1f1;
+}
+body::-webkit-scrollbar-thumb {
+  background: rgb(168, 168, 168);
+  border-radius: 5px;
+}
 
 .container-center {
   max-width: 1300px;
@@ -57,6 +66,9 @@ body.lightMode .container-logoCetis84 {
      -moz-user-select: none;
       -ms-user-select: none;
           user-select: none;
+}
+.conatiner-title-header a {
+  text-decoration: none;
 }
 .conatiner-title-header h2 {
   font-size: 1.7rem;
@@ -143,7 +155,7 @@ body.lightMode form {
 }
 body.lightMode form .form-control {
   color: #000;
-  background: #e6e6e6;
+  background: #cdcdcd;
   border: 1px solid rgb(175, 175, 175);
 }
 body.lightMode form .form-control::-moz-placeholder {
