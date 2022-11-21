@@ -162,7 +162,7 @@
                         
                         <div class="mb-3">
                             <label for="consulta-NoContol" class="form-label">Numero de control:</label>
-                            <input type="text" class="form-control" id="consulta-NoControl" placeholder="Ingresa tu numero de control">
+                            <input type="text" class="form-control" name="consulta-NoControl" id="consulta-NoControl" placeholder="Ingresa tu numero de control">
                             <div class="invalid-feedback">
                                 Ingrese un Numero de control valido.
                             </div>
@@ -170,7 +170,7 @@
                         
                         <div class="mb-3">
                             <label for="consulta-CURP" class="form-label">CURP:</label>
-                            <input type="text" class="form-control" id="consulta-CURP" placeholder="Ingresa tu CURP">
+                            <input type="text" class="form-control" name="consulta-CURP" id="consulta-CURP" placeholder="Ingresa tu CURP">
                             <div class="invalid-feedback">
                                 Ingrese una CURP valida.
                             </div>
@@ -188,14 +188,14 @@
 
                 <div class="container-form_generar hide">
 
-                    <form action="" class="form_consulta">
+                    <form action="./credenciales/" enctype="multipart/form-data" method="POST" class="form_generar">
 
                         <h2>Generar</h2>
 
                         
                         <div class="mb-3">
                             <label for="imagen" class="form-label">Foto:</label>
-                            <input class="form-control" type="file" id="imagen">
+                            <input class="form-control" type="file" id="imagen" name="imagen">
                             <div class="invalid-feedback">
                                 Ingrese una imagen valida.
                             </div>
@@ -203,7 +203,7 @@
                         
                         <div class="mb-3">
                             <label for="generator-NoContol" class="form-label">Numero de control:</label>
-                            <input type="text" class="form-control" id="generator-NoControl" placeholder="Ingresa tu numero de control">
+                            <input type="text" class="form-control" name="generator-NoControl" id="generator-NoControl" placeholder="Ingresa tu numero de control">
                             <div class="invalid-feedback">
                                 Ingrese un Numero de control valido.
                             </div>
@@ -211,14 +211,14 @@
 
                         <div class="mb-3">
                             <label for="generator-CURP" class="form-label">CURP:</label>
-                            <input type="text" class="form-control" id="generator-CURP" placeholder="Ingresa tu CURP">
+                            <input type="text" class="form-control" id="generator-CURP" name="generator-CURP" placeholder="Ingresa tu CURP">
                             <div class="invalid-feedback">
                                 Ingrese una CURP valida.
                             </div>
                         </div>
                         
                         <div class="mb-3">
-                            <button type="button" class="btn btn-outline-danger">Confirmar</button>
+                            <button type="button" id="btnGenerar" class="btn btn-outline-danger">Confirmar</button>
                         </div>
                         
                         <hr/>

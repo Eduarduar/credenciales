@@ -54,6 +54,58 @@
             }
             return $datos;
         }
+        
+        public function confirmNameImagen($imagen) {
+            $query = $this->connect()->prepare("SELECT NoCredencial FROM credencial WHERE imagen = '$imagen'");
+            $query->execute();
+            if ($query->rowCount()){
+                return true;
+            }
+            return false;
+        }
+
+        public function confirmImagenUser($NoControl) {
+            $query = $this->connect()->prepare("SELECT NoCredencial FROM credencial WHERE alumno = $NoControl");
+            $query->execute();
+            if ($query->rowCount()){
+                return true;
+            }
+            return false;
+        }
+
+        public function confirmCredencialID($NoCredencial){
+            $query = $this->connect()->prepare("SELECT NoCredencial FROM credencial WHERE NoCredencial = '$NoCredencial';");
+            $query->execute();
+            if ($query->rowCount()){
+                return true;
+            }
+            return false;
+        }
+
+        public function setCredencial($NoCredencial,$NoControl,$direccion){
+            $this->connect()->query("INSERT INTO credencial VALUES ('$NoCredencial', $NoControl, '$direccion');");
+        }
+
+        public function confirmAlumno($NoControl, $curp){
+            $query = $this->connect()->prepare("SELECT NoControl FROM alumnos WHERE NoControl = $NoControl AND curp = '$curp'");
+            $query->execute();
+            if ($query->rowCount()){
+                return true;
+            }
+            return false;
+        }
+
+        public function getCredencialInfo($NoControl){
+            $query = $this->connect()->prepare("SELECT NoCredencial, imagen FROM credencial WHERE alumno = $NoControl");
+            $query->execute();
+            foreach($query as $registro){
+                $datos = [
+                    'NoCredencial'  => $registro['NoCredencial'],
+                    'imagen'        => $registro['imagen']
+                ];
+            }
+            return $datos;
+        }
 
         public function getAlumnoInfo($NoControl){
             $query = $this->connect()->prepare("SELECT NoControl, nombre, ap_paterno, ap_materno, nombreEspecialidad, curp, generacion, NSS, estado FROM alumnos, especialidades WHERE alumnos.NoControl = $NoControl AND alumnos.especialidad = especialidades.NoEspecialidad;");
