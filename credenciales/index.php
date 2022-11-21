@@ -1,20 +1,48 @@
 <?php
 
     session_start();
-    
+    include_once '../db/user_session.php';
     include_once '../db/queries.php';
     $consulta = new consultas();
+    $userSession = new UserSession();
+    $user_active = false;
+    if (isset($_SESSION['id']) and isset($_SESSION['user']) and isset($_SESSION['rol'])){
+        if ($consulta->confirmarUserById($_SESSION['id'])){
+            $userInfo = $consulta->getUserInfo($_SESSION['id']);
+            if ($userInfo['estado'] == 0){
+                $userSession->closeSession();
+                $user_active = false;
+            }else if ($userInfo['rol'] == 'moder'){
+                $_SESSION['rol'] = 2;
+                $_SESSION['user'] = $userInfo['user'];
+                $user_active = true;
+            }else if ($userInfo['rol'] == 'admin'){
+                $_SESSION['rol'] = 1;
+                $_SESSION['user'] = $userInfo['user'];
+                $user_active = true;
+            }else{
+                $userSession->closeSession();
+                $user_active = false;
+            }
+            
+        }else{
+            $userSession->closeSession();
+            $user_active = false;
+        }
+    }else{
+        $user_active = false;
+    }
+    
     
     if (isset($_FILES['imagen']) and isset($_POST['generator-NoControl']) and isset($_POST['generator-CURP'])){
-        generearCredencial($consulta);
+        generearCredencial($user_active ,$consulta);
     }
 
     if (isset($_POST['consulta-NoControl']) and isset($_POST['consulta-CURP'])){
-        consultarCredencial($consulta, $_POST['consulta-NoControl'], $_POST['consulta-CURP']);
+        consultarCredencial($user_active ,$consulta, $_POST['consulta-NoControl'], $_POST['consulta-CURP']);
     }
 
-    function consultarCredencial($consulta, $NoControl, $curp){
-        // echo 'No se ha creado el codigo para consultar la credencial';
+    function consultarCredencial($user_active ,$consulta, $NoControl, $curp){
         if (!$consulta->confirmAlumno($NoControl, $curp)){
             echo'<script>
             alert("No estas registrado en la base de datos");
@@ -26,6 +54,11 @@
             $datos = $consulta->getAlumnoInfo($NoControl);
             
             if ($datos['estado'] == 0){
+                if ($user_active){
+                    $consulta->setHistorialUsuario('Intento consultar la credencial de ' . $datos['nombre'] .' '. $datos['ap_paterno'] .' '. $datos['ap_materno'] .' '. $datos['NoControl'] . ', El cual esta dado de baja.', $_SESSION['id'], date('d/m/Y, h:i:s'));
+                }else{
+                    $consulta->setHistorialPublic('Intento consultar su credencial, El cual esta dado de baja.', $datos['NoControl'], date('d/m/Y, h:i:s'));
+                }
                 echo'<script>
                 alert("Estas dado de baja por lo cual no puedes consultar tu credencial");
                 
@@ -38,7 +71,18 @@
                     $credencial = $consulta->getCredencialInfo($NoControl);
         
                     generarPDF($credencial['imagen'], $credencial['NoCredencial'], $datos);
+
+                    if ($user_active){
+                        $consulta->setHistorialUsuario('Consulto la credencial de '. $datos['nombre'] .' '. $datos['ap_paterno'] .' '. $datos['ap_materno'] .' '. $datos['NoControl'], $_SESSION['id'], date('d/m/Y, h:i:s'));
+                    }else{
+                        $consulta->setHistorialPublic('Consulto su credencial.', $datos['NoControl'],  date('d/m/Y, h:i:s'));
+                    }
                 }else{
+                    if ($user_active){
+                        $consulta->setHistorialUsuario('Intento consultar la credencial de '. $datos['nombre'] .' '. $datos['ap_paterno'] .' '. $datos['ap_materno'] .' '. $datos['NoControl'] .', La cual no ha sido generada.', $_SESSION['id'], date('d/m/Y, h:i:s'));
+                    }else{
+                        $consulta->setHistorialPublic('Intento consultar su credencial, La cual no ha sido generada.', $datos['NoControl'], date('d/m/Y, h:i:s'));
+                    }
                     echo'<script>
                     alert("Tu credencial todavía no ha sido generada");
                     
@@ -53,10 +97,10 @@
 
     }
 
-    function generearCredencial($consulta){
+    function generearCredencial($user_active ,$consulta){
         $size = $_FILES['imagen']['size'];
 
-        if ($size <= 1048576){
+        if ($size <= 5242880){
             
             if (!$consulta->confirmAlumno($_POST['generator-NoControl'], $_POST['generator-CURP'])){
                 echo'<script>
@@ -69,6 +113,11 @@
                 $datos = $consulta->getAlumnoInfo($_POST['generator-NoControl']);
                 
                 if ($datos['estado'] == 0){
+                    if ($user_active){
+                        $consulta->setHistorialUsuario('Intento generar la credencial de ' . $datos['nombre'] .' '. $datos['ap_paterno'] .' '. $datos['ap_materno'] .' '. $datos['NoControl'] . ', El cual esta dado de baja.', $_SESSION['id'], date('d/m/Y, h:i:s'));
+                    }else{
+                        $consulta->setHistorialPublic('Intento generar su credencial, El cual esta dado de baja.', $datos['NoControl'], date('d/m/Y, h:i:s'));
+                    }
                     echo'<script>
                     alert("Estas dado de baja por lo cual no puedes generar tu credencial");
                     
@@ -77,6 +126,11 @@
                 }else{
 
                     if ($consulta->confirmImagenUser($_POST['generator-NoControl'])){
+                        if ($user_active){
+                            $consulta->setHistorialUsuario('Intento volver ha generar la credencial de '. $datos['nombre'] .' '. $datos['ap_paterno'] .' '. $datos['ap_materno'] .' '. $datos['NoControl'] .', La cual ya ha sido generada.', $_SESSION['id'], date('d/m/Y, h:i:s'));
+                        }else{
+                            $consulta->setHistorialPublic('Intento volver ha generar su credencial, La cual ya ha sido generada.', $datos['NoControl'], date('d/m/Y, h:i:s'));
+                        }
                         echo '
                         <script>
                         
@@ -111,6 +165,12 @@
                         }
                         
                         generarPDF($nameFull, $NoCredencial, $datos);
+
+                        if ($user_active){
+                            $consulta->setHistorialUsuario('Genero la credencial de '. $datos['nombre'] .' '. $datos['ap_paterno'] .' '. $datos['ap_materno'] .' '. $datos['NoControl'], $_SESSION['id'], date('d/m/Y, h:i:s'));
+                        }else{
+                            $consulta->setHistorialPublic('Genero su credencial.', $datos['NoControl'],  date('d/m/Y, h:i:s'));
+                        }
                 
                     }
 
@@ -120,7 +180,7 @@
 
         }else{
             echo'<script>
-            alert("La imagen que has proporcionado pesa mas de 1MB");
+            alert("La imagen que has proporcionado pesa mas de 5MB");
             
             window.location = "../";
             </script>';
@@ -198,6 +258,6 @@
             $pdf->Text(0.2,8,utf8_decode('Concha Nacar 148, La Joya ll, 28869 Manzanillo, Col.'));
             $pdf->Text(1.8,8.3,utf8_decode('Telefono: 314 332 3400'));
             
-            $pdf->Output(); // Cierra y guarda el documento
+            $pdf->Output(); // Cierra y muestra el documento
     }
 ?>
