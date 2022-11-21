@@ -47,7 +47,7 @@ const generar = {
 const validarImagen = function(){
     let error = false;
     try{
-        if (inputImagen.files[0].size > 1048576){ // no sea mallor a un 1Mb.
+        if (inputImagen.files[0].size > 5242880){ // no sea mallor a un 5Mb.
             inputImagen.value = null;
             if (inputImagen.classList.value.includes('is-valid'))
             inputImagen.classList.remove('is-valid');
@@ -64,6 +64,8 @@ const validarImagen = function(){
     if (!error){
         inputImagen.classList.add('is-valid');
         return true;
+    }else{
+        return false;
     }
 }
 
@@ -175,3 +177,10 @@ if(localStorage.getItem('dark-mode') === 'true'){
 	document.body.classList.add('lightMode');
 	btnSwitch.classList.remove('active');
 }
+
+
+let NoControl = document.querySelector('#generator-NoControl');
+let Curp = document.querySelector('#generator-CURP');
+inputImagen.value = null;
+Curp.value = '';
+NoControl.value = '';

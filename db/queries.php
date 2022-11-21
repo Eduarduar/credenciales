@@ -87,7 +87,7 @@
         }
 
         public function confirmAlumno($NoControl, $curp){
-            $query = $this->connect()->prepare("SELECT NoControl FROM alumnos WHERE NoControl = $NoControl AND curp = '$curp'");
+            $query = $this->connect()->prepare("SELECT NoControl FROM alumnos WHERE NoControl = $NoControl AND curp = '$curp';");
             $query->execute();
             if ($query->rowCount()){
                 return true;
@@ -144,6 +144,14 @@
 
         public function consultaFiltro($consulta){
             return $this->connect()->query("".$consulta."");
+        }
+
+        public function setHistorialPublic($accion, $usuario, $fecha){
+            $this->connect()->query("INSERT INTO consultaspublic VALUES (NULL, '$accion', $usuario, '$fecha');");
+        }
+
+        public function setHistorialUsuario($accion, $usuario, $fecha){
+            $this->connect()->query("INSERT INTO movimientosuser VALUES (NULL, '$accion', $usuario, '$fecha');");
         }
 
     }
