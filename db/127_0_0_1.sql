@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 20-11-2022 a las 00:16:38
+-- Tiempo de generación: 21-11-2022 a las 07:25:25
 -- Versión del servidor: 10.4.24-MariaDB
 -- Versión de PHP: 8.1.6
 
@@ -46,26 +46,26 @@ CREATE TABLE `alumnos` (
 --
 
 INSERT INTO `alumnos` (`NoControl`, `nombre`, `ap_paterno`, `ap_materno`, `especialidad`, `curp`, `generacion`, `NSS`, `estado`) VALUES
-(20840030, 'María', 'Valencia', 'Velásquez', 6, 'MAOS010914', '2020 - 2023', 6920052304, 0),
-(20840043, 'Juan', 'Sandoval', 'Silva', 1, 'GOHA020219', '2020 - 2023', 4920442304, 1),
-(20840057, 'Alejandra', 'Martínez', 'Padilla', 4, 'DUDA980819', '2020 - 2023', 5950052304, 1),
-(20840058, 'Alejandro', 'Fernandez', 'Larios', 2, 'GAAM991029', '2020 - 2023', 6220755304, 1),
-(20840091, 'Manuel', 'Garcia', 'Arechiga', 3, 'LADE950908', '2020 - 2023', 6810082304, 0),
-(20840131, 'Eduardo', 'Llamas', 'Diego', 1, 'LOLA990519', '2020 - 2023', 6924082304, 1),
-(20840132, 'Johana', 'Pedraza', 'Ramos', 5, 'DIMS020918', '2020 - 2023', 4920052304, 1),
-(20840148, 'Rubí', 'Beltran', 'Larios', 1, 'ROMA020918', '2020 - 2023', 6920058304, 1),
-(20840187, 'Mayte', 'Arias', 'Téllez', 4, 'SILA616568', '2020 - 2023', 7924055304, 0),
-(20840208, 'Saúl', 'Gómez', 'Baeza', 1, 'CAGV265165', '2020 - 2023', 4928752304, 0),
-(20840221, 'Esmeralda', 'Pérez', 'Salazar', 6, 'BARM615616', '2020 - 2023', 8925057304, 1),
-(20840223, 'Iván', 'Real', 'Sánchez', 4, 'MEPJ165168', '2020 - 2023', 7920054304, 1),
-(20840236, 'Aldo', 'López', 'Lucrecio', 5, 'ARRE465498', '2020 - 2023', 7928058304, 1),
-(20840237, 'Sandra', 'Diaz', 'Martinez', 1, 'MARM651654', '2020 - 2023', 4928059304, 1),
-(20840240, 'Adriana', 'Cuevas', 'Alcalá', 1, 'MELB516516', '2020 - 2023', 2924052504, 0),
-(20840250, 'Joseline', 'Juarez', 'Díaz', 2, 'PACL651655', '2020 - 2023', 1920042304, 1),
-(20840252, 'Abraham', 'López', 'Gutiérrez', 4, 'MOCB564984', '2020 - 2023', 7922062304, 1),
-(20840255, 'Veronica', 'Franco', 'Arana', 6, 'GOHM651654', '2020 - 2023', 8921042304, 0),
-(20840273, 'Alejandro', 'Ibarra', 'Casttilo', 3, 'CEVA561649', '2020 - 2023', 6922072304, 1),
-(20840317, 'Adrián', 'López', 'López', 2, 'JUCG651654', '2020 - 2023', 2925072304, 1);
+(20840030548756, 'María', 'Valencia', 'Velásquez', 6, 'AACM651123MTSLLR06', '2020 - 2023', 6920052304, 0),
+(20840043548756, 'Juan', 'Sandoval', 'Silva', 1, 'OOAZ900824MTSRLL08', '2020 - 2023', 4920442304, 1),
+(20840057548756, 'Alejandra', 'Martínez', 'Padilla', 4, 'SAPM880429MTSNRR00', '2020 - 2023', 5950052304, 1),
+(20840058548756, 'Alejandro', 'Fernandez', 'Larios', 2, 'GORM680121MTSNDG06', '2020 - 2023', 6220755304, 1),
+(20840091548756, 'Manuel', 'Garcia', 'Arechiga', 3, 'ROBG900321MTSDRD01', '2020 - 2023', 6810082304, 0),
+(20840131548756, 'Eduardo', 'Llamas', 'Diego', 1, 'OIRY910429MTSRDL02', '2020 - 2023', 6924082304, 1),
+(20840132548756, 'Johana', 'Pedraza', 'Ramos', 5, 'EIRJ720502HTSSDN06', '2020 - 2023', 4920052304, 1),
+(20840148548756, 'Rubí', 'Beltran', 'Larios', 1, 'RIVS770301HTSVZL05', '2020 - 2023', 6920058304, 1),
+(20840187548756, 'Mayte', 'Arias', 'Téllez', 4, 'SORE610611MTSLMM04', '2020 - 2023', 7924055304, 0),
+(20840208548756, 'Saúl', 'Gómez', 'Baeza', 1, 'TITD600101HTSNRN09', '2020 - 2023', 4928752304, 0),
+(20840221548756, 'Esmeralda', 'Pérez', 'Salazar', 6, 'MOCG481211MTSRSD25', '2020 - 2023', 8925057304, 1),
+(20840223548756, 'Iván', 'Real', 'Sánchez', 4, 'MERG690406HTSDDD03', '2020 - 2023', 7920054304, 1),
+(20840236548756, 'Aldo', 'López', 'Lucrecio', 5, 'CALF631005HTSSDR02', '2020 - 2023', 7928058304, 1),
+(20840237548756, 'Sandra', 'Diaz', 'Martinez', 1, 'GAMS661004HTSLDL05', '2020 - 2023', 4928059304, 1),
+(20840240548756, 'Adriana', 'Cuevas', 'Alcalá', 1, 'SECM620929HTSGPG06', '2020 - 2023', 2924052504, 0),
+(20840250548756, 'Joseline', 'Juarez', 'Díaz', 2, 'AALT601015HTSLPR00', '2020 - 2023', 1920042304, 1),
+(20840252548756, 'Abraham', 'López', 'Gutiérrez', 4, 'GORE781222HTSNBF01 ', '2020 - 2023', 7922062304, 1),
+(20840255548756, 'Veronica', 'Franco', 'Arana', 6, 'MAMG940610HTSRRL03', '2020 - 2023', 8921042304, 0),
+(20840273548756, 'Alejandro', 'Ibarra', 'Casttilo', 3, 'TORA780313MTSRDD04', '2020 - 2023', 6922072304, 1),
+(20840317548756, 'Adrián', 'López', 'López', 2, 'TIPC490202HTSNZN07', '2020 - 2023', 2925072304, 1);
 
 -- --------------------------------------------------------
 
@@ -85,8 +85,8 @@ CREATE TABLE `consultaspublic` (
 --
 
 INSERT INTO `consultaspublic` (`NoRegistro`, `accion`, `usuario`, `fecha`) VALUES
-(1, 'Consultar credencial', 20840221, '07/06/2022'),
-(2, 'Generar Credencial', 20840237, '24/08/2022');
+(1, 'Consultar credencial', 20840221548756, '07/06/2022'),
+(2, 'Generar Credencial', 20840237548756, '24/08/2022');
 
 -- --------------------------------------------------------
 
@@ -95,9 +95,9 @@ INSERT INTO `consultaspublic` (`NoRegistro`, `accion`, `usuario`, `fecha`) VALUE
 --
 
 CREATE TABLE `credencial` (
-  `NoCredencial` int(11) NOT NULL,
+  `NoCredencial` varchar(10) NOT NULL,
   `alumno` double NOT NULL,
-  `Imagen` varchar(50) NOT NULL
+  `imagen` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -251,12 +251,6 @@ ALTER TABLE `usuarios`
 --
 ALTER TABLE `consultaspublic`
   MODIFY `NoRegistro` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
-
---
--- AUTO_INCREMENT de la tabla `credencial`
---
-ALTER TABLE `credencial`
-  MODIFY `NoCredencial` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `especialidades`

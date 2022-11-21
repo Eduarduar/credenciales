@@ -7,6 +7,8 @@ const btn_logout_session = document.querySelector('.container-button_logout butt
 const btn_registros = document.querySelector('.container-button_confi button');
 const btn_mostrar_form_login = document.querySelector('.container-button_login button');
 const btnSwitch = document.querySelector('#switch');
+const inputImagen = document.querySelector("#imagen");
+const btn_submit_form_generar = document.querySelector("#btnGenerar");
 // -------------------------------------------------------------------------------
 
 // inputs -------------------------------------------------
@@ -24,16 +26,66 @@ const expresiones = {
 	usuario: /^[a-zA-Z0-9\_\-]{5,25}$/, // Letras, numeros, guion y guion_bajo
 	password: /^.{0}\w{8,20}$/,  // 8 a 20 digitos.
     passwordS: /^.{0}\w{1,20}$/, // 1 a 20 digitos
-	correo: /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/
+	correo: /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/,
+    NoControl: /^\d{14}$/,
+    CURP: /^[A-Z]{1}[AEIOU]{1}[A-Z]{2}[0-9]{2}(0[1-9]|1[0-2])(0[1-9]|1[0-9]|2[0-9]|3[0-1])[HM]{1}(AS|BC|BS|CC|CS|CH|CL|CM|DF|DG|GT|GR|HG|JC|MC|MN|MS|NT|NL|OC|PL|QT|QR|SP|SL|SR|TC|TS|TL|VZ|YN|ZS|NE)[B-DF-HJ-NP-TV-Z]{3}[0-9A-Z]{1}[0-9]{1}$/
 }
 
 const userLogin = {
     user: false,
     pass: false
 }
+
+const generar = {
+    imagen: false,
+    NoControl: false,
+    curp: false
+}
 // -------------------------------------------------
 
 // funciones ---------------------------------------
+const validarImagen = function(){
+    let error = false;
+    try{
+        if (inputImagen.files[0].size > 1048576){ // no sea mallor a un 1Mb.
+            inputImagen.value = null;
+            if (inputImagen.classList.value.includes('is-valid'))
+            inputImagen.classList.remove('is-valid');
+            inputImagen.classList.add('is-invalid');
+            setTimeout(() => {
+                inputImagen.classList.remove('is-invalid');
+            }, 2000);
+            return false;
+        }
+    }catch{
+        error = true;
+        return false;
+    }
+    if (!error){
+        inputImagen.classList.add('is-valid');
+        return true;
+    }
+}
+
+const validarForm_generar = function (){
+    let NoControl = document.querySelector('#generator-NoControl');
+    let Curp = document.querySelector('#generator-CURP');
+    let form = document.querySelector('.form_generar');
+    generar.imagen = validarImagen();
+    generar.NoControl = validarCampo(expresiones.NoControl, NoControl.value, NoControl.id);
+    generar.curp = validarCampo(expresiones.CURP, Curp.value, Curp.id);
+    if (generar.NoControl == true && generar.curp == true && generar.imagen == true){
+        form.submit();
+    }else{
+        if (generar.imagen == false){
+            inputImagen.classList.add('is-invalid');
+            setTimeout(() => {
+                inputImagen.classList.remove('is-invalid');
+            }, 2000);
+        }
+    }
+}
+
 btnSwitch.addEventListener('click', () => {
 	document.body.classList.toggle('lightMode');
 	btnSwitch.classList.toggle('active');
@@ -43,6 +95,7 @@ btnSwitch.addEventListener('click', () => {
 		localStorage.setItem('dark-mode', 'true');
 	}
 });
+
 const changeForms = function (){
     form_consultar.classList.toggle('hide');
     form_generar.classList.toggle('hide');
@@ -57,6 +110,13 @@ const validarForm = (e) => {
         break;
         case 'pass':
             userLogin.pass = validarCampo(expresiones.password, e.target.value, e.target.id);
+        break;
+
+        case 'generator-NoControl':
+            generar.NoControl = validarCampo(expresiones.NoControl, e.target.value, e.target.id);
+        break;
+        case 'generator-CURP':
+            generar.curp = validarCampo(expresiones.CURP, e.target.value, e.target.id);
         break;
     }
 }
@@ -104,6 +164,8 @@ if (btn_logout_session != null){
     btn_logout_session.addEventListener('click', logout);
     btn_registros.addEventListener('click', registros);
 }
+inputImagen.addEventListener('blur', validarImagen);
+btn_submit_form_generar.addEventListener('click', validarForm_generar);
 // -------------------------------------------------
 
 if(localStorage.getItem('dark-mode') === 'true'){
