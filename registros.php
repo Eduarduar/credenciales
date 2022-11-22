@@ -55,7 +55,7 @@
 
                 <div class="conatiner-title-header">
 
-                    <a href="http://cetis084.com.mx/" target="_blank"><h2>CETIs 84</h1></a>
+                    <a href="http://cetis084.com.mx/" target="_blank"><h2>CETIS 84</h1></a>
 
                 </div>
 
