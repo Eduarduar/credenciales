@@ -49,7 +49,7 @@ const updateForm_modificar_usuario = function (e){
             $("#options-rol-modificar option[value=1]").attr("selected",false);
             $("#options-rol-modificar option[value=2]").attr("selected",false);
             $("#options-estado-modificar option[value=1]").attr("selected",false);
-            $("#options-estado-modificar option[value=2]").attr("selected",false);
+            $("#options-estado-modificar option[value=0]").attr("selected",false);
             $('#user-modificar').val(request.user);
             $('#nombre-modificar').val(request.nombre);
             $('#apP-modificar').val(request.ap_paterno);
