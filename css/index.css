@@ -189,9 +189,10 @@ body.lightMode .modal-content {
 }
 
 .container-switch {
-  position: absolute;
-  right: 0;
-  margin-top: 0.25rem;
+  position: relative;
+  left: calc(100% - (180px + 6rem));
+  top: 4px;
+  margin-right: 0rem !important;
 }
 
 .switch {
