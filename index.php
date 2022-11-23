@@ -1,11 +1,23 @@
 <?php
 
     session_start();
+    date_default_timezone_set("America/Mexico_City");
     include_once './db/queries.php';
     $consulta = new consultas();
 
     $moder = false;
     $errorLogin = false;
+
+    if (isset($_POST['user']) and isset($_POST['pass'])){
+        $login = $consulta->Login($_POST['user'], $_POST['pass']);
+        if ($login != false){
+            $_SESSION['id'] = $login['id'];
+            $_SESSION['user'] = $login['user'];
+            $_SESSION['rol'] = $login['rol'];
+        }else{
+            $errorLogin = true;
+        }
+    }
 
     if(isset($_SESSION['id']) and isset($_SESSION['user']) and isset($_SESSION['rol'])){
         if ($_SESSION['rol'] != 2 and $_SESSION['rol'] != 1){
@@ -16,17 +28,6 @@
 
 
 
-    if (isset($_POST['user']) and isset($_POST['pass'])){
-        $login = $consulta->Login($_POST['user'], $_POST['pass']);
-        if ($login != false){
-            $_SESSION['id'] = $login['id'];
-            $_SESSION['user'] = $login['user'];
-            $_SESSION['rol'] = $login['rol'];
-            header('location: ./');
-        }else{
-            $errorLogin = true;
-        }
-    }
 
 ?>
 

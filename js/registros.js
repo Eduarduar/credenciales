@@ -4,7 +4,10 @@ const btn_back = document.querySelector('.container-button_back button');
 
 const buttons_Usuarios = document.querySelectorAll('.Registro_usuario');
 const buttons_Alumnos = document.querySelectorAll('.Registro_alumno');
+
 const btnSwitch = document.querySelector('#switch');
+
+const buttons_delete = document.querySelectorAll('.delete')
 // -----------------------------------------------------------------------------------
 
 // inputs ----------------------------------------------------------------------------
@@ -19,6 +22,9 @@ const input_filtro_historial_alumnos = document.querySelector('#filtro_historial
 
 const input_select_filtro_historial_users = document.querySelector('#options-filtro_historial_usuario');
 const input_filtro_historial_users = document.querySelector('#filtro_historial_usuario');
+
+const input_select_filtro_credenciales = document.querySelector('#options-filtro_credenciales');
+const input_filtro_credenciales = document.querySelector('#filtro_credencial');
 // -----------------------------------------------------------------------------------
 
 // table -----------------------------------------------------------------------------
@@ -209,6 +215,59 @@ const filtrar_tabla_historial_users = function (){
         }
     });
 }
+const filtrar_tabla_credenciales = function (){
+    const filtro = '%' + input_filtro_credenciales.value.replace(/\s+/g, ' ') + '%';
+    let consulta_filtro_credenciales = '';
+    if (input_select_filtro_credenciales.value == ''){    
+        consulta_filtro_credenciales = `SELECT NoCredencial, NoControl, nombre, ap_paterno, ap_materno FROM credencial c INNER JOIN alumnos a WHERE (c.alumno = a.NoControl) AND (c.NoCredencial LIKE'${filtro}' OR a.NoControl LIKE'${filtro}' OR a.nombre LIKE'${filtro}' OR a.ap_paterno LIKE'${filtro}' OR a.ap_materno LIKE'${filtro}'); `;
+    }else if (input_select_filtro_credenciales.value == 'NoCredencial'){
+        consulta_filtro_credenciales = `SELECT NoCredencial, NoControl, nombre, ap_paterno, ap_materno FROM credencial c INNER JOIN alumnos a WHERE c.alumno = a.NoControl AND c.NoCredencial LIKE'${filtro}';`;
+    }else{
+        consulta_filtro_credenciales = `SELECT NoCredencial, NoControl, nombre, ap_paterno, ap_materno FROM credencial c INNER JOIN alumnos a WHERE (c.alumno = a.NoControl) AND (a.${input_select_filtro_credenciales.value} LIKE'${filtro}');`;
+    }
+    $.ajax({
+        url:'./db/queries.php',
+        type: 'POST',
+        data: {consulta_filtro_credenciales: consulta_filtro_credenciales},
+        success: function (respuesta) {
+            let request = JSON.parse(respuesta);
+            document.querySelectorAll('.delete').forEach((element) => {
+                element.removeEventListener('click', deleteCredencial);
+            });
+            $('#container_registros_credenciales').html(request);
+            document.querySelectorAll('.delete').forEach((element) => {
+                element.addEventListener('click', deleteCredencial);
+            });
+        }
+    });
+}
+const deleteCredencial = function (e){
+    if (confirm('¿Seguro que quiere eliminar esta credencia?')){
+        let td;
+        let svg;
+        let id;
+        if(e.target.localName == 'path'){
+            svg = e.target.parentNode;
+            id = svg.id;
+            td = svg.parentNode;
+        }else{
+            id = e.target.id;
+            td = e.target.parentNode;
+        }
+        let tr = td.parentNode; 
+        let tbody = tr.parentNode;
+        tbody.removeChild(tr);
+        $.ajax({
+            url:'./db/queries.php',
+            type: 'POST',
+            data: {deleteCredencial: id, user: user_session_id, consulta_filtro_historial_users: "SELECT NoRegistro, movimiento, ID, user, fecha FROM movimientosuser, usuarios WHERE (movimientosuser.usuario = usuarios.ID) ORDER BY movimientosuser.NoRegistro DESC;"},
+            success:  function (respuesta){
+                let request = JSON.parse(respuesta);
+                $('#container_historial_users').html(request);
+            }
+        });
+    }
+}
 // -----------------------------------------------------------------------------------
 
 // escuchadores ----------------------------------------------------------------------
@@ -220,21 +279,24 @@ buttons_Usuarios.forEach((elemnt) => {
 buttons_Alumnos.forEach((elemnt) => {
     elemnt.addEventListener('click', updateForm_modificar_alumno);
 });
-input_filtro_alumnos.addEventListener('keypress', filtrar_tabla_alumno);
-input_filtro_alumnos.addEventListener('keyup', filtrar_tabla_alumno);
-input_select_filtro_alumnos.addEventListener('click', filtrar_tabla_alumno);
-input_select_filtro_alumnos.addEventListener('focus', filtrar_tabla_alumno);
-input_select_filtro_alumnos.addEventListener('blur', filtrar_tabla_alumno);
+buttons_delete.forEach((element) => {
+    element.addEventListener('click', deleteCredencial);
+});
+input_filtro_alumnos.addEventListener(          'keypress',filtrar_tabla_alumno);
+input_filtro_alumnos.addEventListener(          'keyup',   filtrar_tabla_alumno);
+input_select_filtro_alumnos.addEventListener(   'click',   filtrar_tabla_alumno);
+input_select_filtro_alumnos.addEventListener(   'focus',   filtrar_tabla_alumno);
+input_select_filtro_alumnos.addEventListener(   'blur',    filtrar_tabla_alumno);
+if (rol == 1){
+    input_filtro_users.addEventListener(        'keypress',     filtrar_tabla_user);
+    input_filtro_users.addEventListener(        'keyup',        filtrar_tabla_user);
+    input_select_filtro_users.addEventListener( 'focus',        filtrar_tabla_user);
+    input_select_filtro_users.addEventListener( 'click',        filtrar_tabla_user);
+    input_select_filtro_users.addEventListener( 'blur',         filtrar_tabla_user);
+}
 
-input_filtro_users.addEventListener(        'keypress',     filtrar_tabla_user);
-input_filtro_users.addEventListener(        'keyup',        filtrar_tabla_user);
-input_select_filtro_users.addEventListener( 'focus',        filtrar_tabla_user);
-input_select_filtro_users.addEventListener( 'click',        filtrar_tabla_user);
-input_select_filtro_users.addEventListener( 'blur',         filtrar_tabla_user);
-
-
-input_filtro_historial_alumnos.addEventListener(       'keypress',     filtrar_tabla_historial_alumnos);
-input_filtro_historial_alumnos.addEventListener(       'keyup',        filtrar_tabla_historial_alumnos);
+input_filtro_historial_alumnos.addEventListener(        'keypress',     filtrar_tabla_historial_alumnos);
+input_filtro_historial_alumnos.addEventListener(        'keyup',        filtrar_tabla_historial_alumnos);
 input_select_filtro_historial_alumnos.addEventListener( 'focus',        filtrar_tabla_historial_alumnos);
 input_select_filtro_historial_alumnos.addEventListener( 'click',        filtrar_tabla_historial_alumnos);
 input_select_filtro_historial_alumnos.addEventListener( 'blur',         filtrar_tabla_historial_alumnos);
@@ -244,6 +306,12 @@ input_filtro_historial_users.addEventListener(        'keyup',        filtrar_ta
 input_select_filtro_historial_users.addEventListener( 'focus',        filtrar_tabla_historial_users);
 input_select_filtro_historial_users.addEventListener( 'click',        filtrar_tabla_historial_users);
 input_select_filtro_historial_users.addEventListener( 'blur',         filtrar_tabla_historial_users);
+
+input_filtro_credenciales.addEventListener(         'keypress', filtrar_tabla_credenciales);
+input_filtro_credenciales.addEventListener(         'keyup',    filtrar_tabla_credenciales);
+input_select_filtro_credenciales.addEventListener(  'focus',    filtrar_tabla_credenciales);
+input_select_filtro_credenciales.addEventListener(  'click',    filtrar_tabla_credenciales);
+input_select_filtro_credenciales.addEventListener(  'blur',     filtrar_tabla_credenciales);
 // -----------------------------------------------------------------------------------
 
 

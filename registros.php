@@ -1,6 +1,7 @@
 <?php
 
     session_start();
+    date_default_timezone_set("America/Mexico_City");
     include_once './db/queries.php';
     $consulta = new consultas();
 
@@ -190,38 +191,136 @@
                     </div>
                 </div>
 
+                <?php
+                
+                    if ($_SESSION['rol'] == 1){
+
+                        ?>
+                        
+
+                        
+                            <hr/>
+            
+                            <div class="container-options_tabla_user">
+            
+                                <div class="container-filtro_user form">
+            
+                                    <h4>Usuarios</h4>
+            
+                                    <div class="input-group mb-3">
+                                        <label class="input-group-text" for="options-filtro_user">Filtros</label>
+                                        <select class="form-select" id="options-filtro_user">
+                                            <option selected></option>
+                                                <option value="ID">ID</option>
+                                                <option value="user">User</option>
+                                                <option value="nombre">Nombre</option>
+                                                <option value="ap_paterno">ap_Paterno</option>
+                                                <option value="ap_materno">ap_Materno</option>
+                                                <option value="mail">Mail</option>
+                                                <option value="telefono">Telefono</option>
+                                                <option value="nombreRol">Rol</option>
+                                                <option value="estado">Estado</option>
+                                        </select>
+                                    </div>
+            
+                                    <div class="mb-3">
+                                        <label for="filtro_user" class="form-label">Filtrar:</label>
+                                        <input type="text" class="form-control" id="filtro_user" placeholder="ingrese un filtro">
+                                    </div>
+            
+                                </div>
+            
+                                <div class="container-tabla_user table-responsive">
+            
+                                    
+                                    <table class="table  table-striped table-sm table-hover">
+            
+                                        <thead>
+            
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>User</th>
+                                                <th>Nombre</th>
+                                                <th>ap_Paterno</th>
+                                                <th>ap_Materno</th>
+                                                <th>Mail</th>
+                                                <th>Telefono</th>
+                                                <th>Rol</th>
+                                                <th>Estado</th>
+                                            </tr>
+                                            
+                                        </thead>
+                                        <tbody id="container_registros_user" class="table-group-divider">
+            
+                                            <?php
+                                            
+                                                foreach($consulta->getUsersInfo($_SESSION['id']) as $registro){
+            
+                                                    ?>
+            
+                                                        <tr class="Registro_usuario" id="<?php echo $registro['ID'] ?>" data-bs-toggle="modal" data-bs-target="#form-modificar_usuario-modal">
+                                                            <td id="<?php echo $registro['ID'] ?>"><?php echo $registro['ID'] ?></td>
+                                                            <td id="<?php echo $registro['ID'] ?>"><?php echo $registro['user'] ?></td>
+                                                            <td id="<?php echo $registro['ID'] ?>"><?php echo $registro['nombre'] ?></td>
+                                                            <td id="<?php echo $registro['ID'] ?>"><?php echo $registro['ap_paterno'] ?></td>
+                                                            <td id="<?php echo $registro['ID'] ?>"><?php echo $registro['ap_materno'] ?></td>
+                                                            <td id="<?php echo $registro['ID'] ?>"><?php echo $registro['mail'] ?></td>
+                                                            <td id="<?php echo $registro['ID'] ?>"><?php echo $registro['telefono'] ?></td>
+                                                            <td id="<?php echo $registro['ID'] ?>"><?php echo $registro['nombreRol'] ?></td>
+                                                            <td class="estado" id="<?php echo $registro['ID'] ?>"><?php echo $registro['estado'] ?></td>
+                                                        </tr>
+            
+                                                    <?php
+            
+                                                }
+                                        
+                                            ?>
+            
+                                            <tr id="insertUser">
+                                                <th scope="row" data-bs-toggle="modal" data-bs-target="#form-insertar_usuario-modal"><svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg></th>
+                                                <td colspan="8" class="table-active" data-bs-toggle="modal" data-bs-target="#form-insertar_usuario-modal" >Insertar Nuevo Usuario</td>
+                                            </tr>
+                                            
+                                        </tbody>
+            
+                                    </table>
+                                
+                                </div>
+                            </div>
+                        <?php
+                        
+                    }
+                
+                ?>
+
                 <hr/>
 
-                <div class="container-options_tabla_user">
+                <div class="container-options-tabla_credenciales">
 
-                    <div class="container-filtro_user form">
+                    <div class="container-filtro_credenciales form">
 
-                        <h4>Usuarios</h4>
-
-                        <div class="input-group mb-3">
-                            <label class="input-group-text" for="options-filtro_user">Filtros</label>
-                            <select class="form-select" id="options-filtro_user">
-                                <option selected></option>
-                                    <option value="ID">ID</option>
-                                    <option value="user">User</option>
-                                    <option value="nombre">Nombre</option>
-                                    <option value="ap_paterno">ap_Paterno</option>
-                                    <option value="ap_materno">ap_Materno</option>
-                                    <option value="mail">Mail</option>
-                                    <option value="telefono">Telefono</option>
-                                    <option value="nombreRol">Rol</option>
-                                    <option value="estado">Estado</option>
-                            </select>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="filtro_user" class="form-label">Filtrar:</label>
-                            <input type="text" class="form-control" id="filtro_user" placeholder="ingrese un filtro">
-                        </div>
+                        <h4>Credenciales</h4>
+            
+                            <div class="input-group mb-3">
+                                <label class="input-group-text" for="options-filtro_credenciales">Filtros</label>
+                                <select class="form-select" id="options-filtro_credenciales">
+                                    <option selected></option>
+                                        <option value="NoCredencial">NoCredencial</option>
+                                        <option value="NoControl">NoControl</option>
+                                        <option value="nombre">Nombre</option>
+                                        <option value="ap_paterno">ap_paterno</option>
+                                        <option value="ap_materno">ap_materno</option>
+                                </select>
+                            </div>
+    
+                            <div class="mb-3">
+                                <label for="filtro_credencial" class="form-label">Filtrar:</label>
+                                <input type="text" class="form-control" id="filtro_credencial" placeholder="ingrese un filtro">
+                            </div>
 
                     </div>
 
-                    <div class="container-tabla_user table-responsive">
+                    <div class="container-tabla_credenciales table-responsive">
 
                         
                         <table class="table  table-striped table-sm table-hover">
@@ -229,54 +328,42 @@
                             <thead>
 
                                 <tr>
-                                    <th>ID</th>
-                                    <th>User</th>
+                                    <th>NoCredencial</th>
+                                    <th>NoControl</th>
                                     <th>Nombre</th>
-                                    <th>ap_Paterno</th>
-                                    <th>ap_Materno</th>
-                                    <th>Mail</th>
-                                    <th>Telefono</th>
-                                    <th>Rol</th>
-                                    <th>Estado</th>
+                                    <th>ap_paterno</th>
+                                    <th>ap_materno</th>
+                                    <th>Eliminar</th>
                                 </tr>
                                 
                             </thead>
-                            <tbody id="container_registros_user" class="table-group-divider">
+                            <tbody id="container_registros_credenciales" class="table-group-divider">
 
                                 <?php
                                 
-                                    foreach($consulta->getUsersInfo($_SESSION['id']) as $registro){
+                                    foreach($consulta->getCredenciaInfoTabla() as $registro){
 
                                         ?>
-
-                                            <tr class="Registro_usuario" id="<?php echo $registro['ID'] ?>" data-bs-toggle="modal" data-bs-target="#form-modificar_usuario-modal">
-                                                <td id="<?php echo $registro['ID'] ?>"><?php echo $registro['ID'] ?></td>
-                                                <td id="<?php echo $registro['ID'] ?>"><?php echo $registro['user'] ?></td>
-                                                <td id="<?php echo $registro['ID'] ?>"><?php echo $registro['nombre'] ?></td>
-                                                <td id="<?php echo $registro['ID'] ?>"><?php echo $registro['ap_paterno'] ?></td>
-                                                <td id="<?php echo $registro['ID'] ?>"><?php echo $registro['ap_materno'] ?></td>
-                                                <td id="<?php echo $registro['ID'] ?>"><?php echo $registro['mail'] ?></td>
-                                                <td id="<?php echo $registro['ID'] ?>"><?php echo $registro['telefono'] ?></td>
-                                                <td id="<?php echo $registro['ID'] ?>"><?php echo $registro['nombreRol'] ?></td>
-                                                <td class="estado" id="<?php echo $registro['ID'] ?>"><?php echo $registro['estado'] ?></td>
-                                            </tr>
+                                        
+                                            <tr class="Registro_credencial" id="<?php echo $registro['NoCredencial'] ?>">
+                                                <td id="<?php echo $registro['NoCredencial'] ?>"><?php echo $registro['NoCredencial'] ?></td>
+                                                <td id="<?php echo $registro['NoCredencial'] ?>"><?php echo $registro['NoControl'] ?></td>
+                                                <td id="<?php echo $registro['NoCredencial'] ?>"><?php echo $registro['nombre'] ?></td>
+                                                <td id="<?php echo $registro['NoCredencial'] ?>"><?php echo $registro['ap_paterno'] ?></td>
+                                                <td id="<?php echo $registro['NoCredencial'] ?>"><?php echo $registro['ap_materno'] ?></td>
+                                                <td><svg xmlns="http://www.w3.org/2000/svg" id="<?php echo $registro['NoCredencial'] ?>" width="16" height="16" fill="currentColor" class="bi bi-trash-fill delete" viewBox="0 0 16 16"><path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z"/></svg></td>                                                
+                                            </tr> 
 
                                         <?php
 
                                     }
-                            
-                                ?>
 
-                                <tr id="insertUser">
-                                    <th scope="row" data-bs-toggle="modal" data-bs-target="#form-insertar_usuario-modal"><svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg></th>
-                                    <td colspan="8" class="table-active" data-bs-toggle="modal" data-bs-target="#form-insertar_usuario-modal" >Insertar Nuevo Usuario</td>
-                                </tr>
+                                ?>
                                 
                             </tbody>
 
                         </table>
-                    
-                    </div>
+
                 </div>
 
                 <hr/>
@@ -405,8 +492,11 @@
                     
                     <div class="clear"></div>
 
+                    <hr/>
+                    
                 </div>
                 
+
             </div>
             
         </main>
@@ -852,6 +942,7 @@
         <script>
 
             const user_session_id = <?php echo $_SESSION['id']; ?>;
+            const rol = <?php echo $_SESSION['rol']; ?>
 
         </script>
         <script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>

@@ -1,12 +1,14 @@
 <?php
 
     include_once 'db.php';
+    
+    date_default_timezone_set("America/Mexico_City");
 
     class consultas extends DB {
 
         public function Login ($user, $pass){
             $pass = md5($pass);
-            $query = $this->connect()->prepare("SELECT ID, user, password, rol FROM usuarios WHERE user = '$user'");
+            $query = $this->connect()->prepare("SELECT ID, user, password, rol FROM usuarios WHERE user = '$user' AND estado = 1");
             $query->execute();
             if ($query->rowCount()){
 
@@ -57,6 +59,29 @@
             return $datos;
         }
         
+        public function getAlumnoInfo($NoControl){
+            $query = $this->connect()->prepare("SELECT NoControl, nombre, ap_paterno, ap_materno, nombreEspecialidad, curp, generacion, NSS, estado FROM alumnos, especialidades WHERE alumnos.NoControl = $NoControl AND alumnos.especialidad = especialidades.NoEspecialidad;");
+            $query->execute();
+            foreach($query as $registro){
+                $datos = [
+                    'NoControl'     => $registro['NoControl'],
+                    'nombre'        => $registro['nombre'],
+                    'ap_paterno'    => $registro['ap_paterno'],
+                    'ap_materno'    => $registro['ap_materno'],
+                    'ESP'           => $registro['nombreEspecialidad'],
+                    'curp'          => $registro['curp'],
+                    'generacion'    => $registro['generacion'],
+                    'NSS'           => $registro['NSS'],
+                    'estado'        => $registro['estado']
+                ];
+            }
+            return $datos;
+        }
+
+        public function getCredenciaInfoTabla(){
+            return $this->connect()->query("SELECT NoCredencial , NoControl, nombre, ap_paterno, ap_materno FROM alumnos a INNER JOIN credencial c WHERE a.NoControl = c.alumno;");
+        }
+
         public function confirmNameImagen($imagen) {
             $query = $this->connect()->prepare("SELECT NoCredencial FROM credencial WHERE imagen = '$imagen'");
             $query->execute();
@@ -109,23 +134,13 @@
             return $datos;
         }
 
-        public function getAlumnoInfo($NoControl){
-            $query = $this->connect()->prepare("SELECT NoControl, nombre, ap_paterno, ap_materno, nombreEspecialidad, curp, generacion, NSS, estado FROM alumnos, especialidades WHERE alumnos.NoControl = $NoControl AND alumnos.especialidad = especialidades.NoEspecialidad;");
+        public function getCredencialInfoByNoCredencial($NoCredencial){
+            $query = $this->connect()->prepare("SELECT imagen FROM credencial WHERE NoCredencial = '$NoCredencial'");
             $query->execute();
             foreach($query as $registro){
-                $datos = [
-                    'NoControl'     => $registro['NoControl'],
-                    'nombre'        => $registro['nombre'],
-                    'ap_paterno'    => $registro['ap_paterno'],
-                    'ap_materno'    => $registro['ap_materno'],
-                    'ESP'           => $registro['nombreEspecialidad'],
-                    'curp'          => $registro['curp'],
-                    'generacion'    => $registro['generacion'],
-                    'NSS'           => $registro['NSS'],
-                    'estado'        => $registro['estado']
-                ];
+                $imagen = $registro['imagen'];
             }
-            return $datos;
+            return $imagen;
         }
 
         public function getHistorialAlumnos(){
@@ -155,6 +170,18 @@
         public function setHistorialUsuario($accion, $usuario, $fecha){
             $this->connect()->query("INSERT INTO movimientosuser VALUES (NULL, '$accion', $usuario, '$fecha');");
         }
+        
+        public function deleteCredencial($NoCredencial){
+            $query = $this->connect()->prepare("SELECT alumno FROM credencial WHERE NoCredencial = '$NoCredencial'");
+            $query->execute();
+            $NoControl;
+            foreach($query as $registro){
+                $NoControl = $registro['alumno'];
+            }
+            $datos = $this->getAlumnoInfo($NoControl);
+            $this->connect()->query("DELETE FROM credencial WHERE NoCredencial = '$NoCredencial';");
+            return $datos;
+        }
 
     }
 
@@ -162,6 +189,22 @@
 
     if (isset($_POST['id_consultar_usuario'])){
         echo json_encode($consulta->getUserInfo($_POST['id_consultar_usuario']));
+    }
+
+    if (isset($_POST['deleteCredencial']) and isset($_POST['user'])){
+        $user = $_POST['user'];
+        $NoCredencial = $_POST['deleteCredencial'];
+        $imagen = $consulta->getCredencialInfoByNoCredencial($NoCredencial);
+        $array = explode('/', $imagen);
+        $nombre = array_pop($array);
+        $direccion = '../credenciales/'.$nombre;
+        unlink($direccion);
+        $datos = $consulta->deleteCredencial($NoCredencial);
+        $consulta->setHistorialUsuario('Elimino la credencial de ' . $datos['nombre'] . ' ' . $datos['ap_paterno'] . ' ' . $datos['ap_materno'] . ' ' . $datos['NoControl'], $user, date('d/m/Y, h:i:s'));
+    }
+
+    if (isset($_POST['NoControl_consultar_alumno'])){
+        echo json_encode($consulta->getAlumnoInfo($_POST['NoControl_consultar_alumno']));
     }
 
     if (isset($_POST['consulta_filtro_user'])){
@@ -252,8 +295,22 @@
         echo json_encode($tabla);
     }
 
-    if (isset($_POST['NoControl_consultar_alumno'])){
-        echo json_encode($consulta->getAlumnoInfo($_POST['NoControl_consultar_alumno']));
+    if (isset($_POST['consulta_filtro_credenciales'])){
+        $filtro = $_POST['consulta_filtro_credenciales'];
+        $tabla = '';
+        foreach($consulta->consultaFiltro($filtro) as $registro){
+            $tabla .= '
+                <tr class="Registro_credencial" id="'. $registro['NoCredencial'] .'">
+                    <td id="'. $registro['NoCredencial'] .'">'. $registro['NoCredencial'] .'</td>
+                    <td id="'. $registro['NoCredencial'] .'">'. $registro['NoControl'] .'</td>
+                    <td id="'. $registro['NoCredencial'] .'">'. $registro['nombre'] .'</td>
+                    <td id="'. $registro['NoCredencial'] .'">'. $registro['ap_paterno'] .'</td>
+                    <td id="'. $registro['NoCredencial'] .'">'. $registro['ap_materno'] .'</td>
+                    <td><svg xmlns="http://www.w3.org/2000/svg" id="'. $registro['NoCredencial'] .'" width="16" height="16" fill="currentColor" class="bi bi-trash-fill delete" viewBox="0 0 16 16"><path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z"/></svg></td>
+                </tr>
+            ';
+        }
+        echo json_encode($tabla);
     }
 
 ?>
