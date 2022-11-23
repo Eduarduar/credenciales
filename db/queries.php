@@ -20,8 +20,10 @@
                 }
 
                 if (password_verify($pass, $password)){
+                    $this->setHistorialUsuario('Inicio sessión', $datos['id'], date('d/m/Y, h:i:s'));
                     return $datos;
                 }
+                $this->setHistorialUsuario('Intento Iniciar Sessión', $datos['id'], date('d/m/Y, h:i:s'));
 
             }
             return false;
