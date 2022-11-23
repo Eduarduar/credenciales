@@ -121,7 +121,6 @@ hr.divTabla {
 
 .container-options_tabla_alumnos .container-tabla_alumnos {
   max-width: 100%;
-  max-height: 450px;
 }
 .container-options_tabla_alumnos .container-tabla_alumnos #insertAlumno th {
   text-align: center;
@@ -140,7 +139,6 @@ hr.divTabla {
 
 .container-options_tabla_user .container-tabla_user {
   max-width: 100%;
-  max-height: 450px;
 }
 .container-options_tabla_user .container-tabla_user #insertUser th {
   text-align: center;
@@ -153,13 +151,27 @@ hr.divTabla {
   cursor: pointer;
 }
 
+.container-tabla_credenciales .delete {
+  text-align: center;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
+  cursor: pointer;
+}
+.container-tabla_credenciales .delete:hover {
+  color: rgb(167, 32, 31);
+}
+
 .container-filtro_alumnos,
-.container-filtro_user {
+.container-filtro_user,
+.container-filtro_credenciales {
   max-width: 500px;
   color: #fff;
 }
 .container-filtro_alumnos h4,
-.container-filtro_user h4 {
+.container-filtro_user h4,
+.container-filtro_credenciales h4 {
   margin-bottom: 1.2rem;
 }
 
@@ -170,6 +182,9 @@ hr.divTabla {
   margin-bottom: 1rem;
 }
 
+.table-responsive {
+  max-height: 450px;
+}
 .table-responsive::-webkit-scrollbar {
   width: 10px;
   height: 7px;
@@ -194,6 +209,10 @@ form .input-group-text,
   background: rgb(63, 65, 70);
   border: none;
 }
+form .form-select,
+.form .form-select {
+  cursor: pointer;
+}
 form .form-control,
 form .form-select,
 .form .form-control,
@@ -201,7 +220,6 @@ form .form-select,
   color: #fff;
   background: rgb(41, 42, 45);
   border: none;
-  cursor: pointer;
 }
 form .form-control::-moz-placeholder, form .form-select::-moz-placeholder, .form .form-control::-moz-placeholder, .form .form-select::-moz-placeholder {
   color: #c3c3c3;

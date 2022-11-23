@@ -1,6 +1,7 @@
 <?php
 
     session_start();
+    date_default_timezone_set("America/Mexico_City");
     include_once '../db/user_session.php';
     include_once '../db/queries.php';
     $consulta = new consultas();
@@ -169,7 +170,7 @@
                         if ($user_active){
                             $consulta->setHistorialUsuario('Genero la credencial de '. $datos['nombre'] .' '. $datos['ap_paterno'] .' '. $datos['ap_materno'] .' '. $datos['NoControl'], $_SESSION['id'], date('d/m/Y, h:i:s'));
                         }else{
-                            $consulta->setHistorialPublic('Genero su credencial.', $datos['NoControl'],  date('d/m/Y, h:i:s'));
+                            $consulta->setHistorialPublic('Genero su credencial.', $datos['NoControl'], date('d/m/Y, h:i:s'));
                         }
                 
                     }
