@@ -156,7 +156,7 @@
 
                 <div class="container-form_consulta">
 
-                    <form action="" class="form_consulta">
+                    <form action="./credenciales/" method="POST" class="form_consulta">
 
                         <h2>Consulta</h2>
 
@@ -178,7 +178,7 @@
                         </div>
                         
                         <div class="mb-3">
-                            <button type="button" class="btn btn-outline-danger">Confirmar</button>
+                            <button type="button" id="btnConsultar" class="btn btn-outline-danger">Confirmar</button>
                         </div>
 
                         <hr/>
