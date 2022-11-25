@@ -9,6 +9,7 @@ const btn_mostrar_form_login = document.querySelector('.container-button_login b
 const btnSwitch = document.querySelector('#switch');
 const inputImagen = document.querySelector("#imagen");
 const btn_submit_form_generar = document.querySelector("#btnGenerar");
+const btn_submit_form_consultar = document.querySelector('#btnConsultar');
 // -------------------------------------------------------------------------------
 
 // inputs -------------------------------------------------
@@ -19,6 +20,7 @@ const btn_submit_form_generar = document.querySelector("#btnGenerar");
 const form_consultar    =   document.querySelector('.container-form_consulta');
 const form_generar      =   document.querySelector('.container-form_generar' );
 const form_login        =   document.querySelector('.form-login');
+const form_consultarF   = document.querySelector('.form_consulta');
 // ----------------------------------------------------------------------------
 
 // variables ---------------------------------------
@@ -34,6 +36,11 @@ const expresiones = {
 const userLogin = {
     user: false,
     pass: false
+}
+
+const consultar = {
+    NoControl: false,
+    curp: false
 }
 
 const generar = {
@@ -120,6 +127,14 @@ const validarForm = (e) => {
         case 'generator-CURP':
             generar.curp = validarCampo(expresiones.CURP, e.target.value, e.target.id);
         break;
+
+        case 'consulta-NoControl':
+            consultar.NoControl = validarCampo(expresiones.NoControl, e.target.value, e.target.id);
+        break;
+        
+        case 'consulta-CURP':
+            consultar.curp = validarCampo(expresiones.CURP, e.target.value, e.target.id);
+        break;
     }
 }
 
@@ -142,6 +157,16 @@ const submitLogin = function () {
     userLogin.pass = validarCampo(expresiones.password, pass.value, pass.id);
     if (userLogin.user == true && userLogin.pass == true){
         form_login.submit();
+    }
+}
+
+const submitConsulta = function (){
+    let NoControl = document.querySelector('#consulta-NoControl');
+    let curp = document.querySelector('#consulta-CURP');
+    consultar.NoControl = validarCampo(expresiones.NoControl, NoControl.value, NoControl.id);
+    consultar.curp = validarCampo(expresiones.CURP, curp.value, curp.id);
+    if (consultar.NoControl && consultar.curp){
+        form_consultarF.submit();
     }
 }
 
@@ -168,6 +193,7 @@ if (btn_logout_session != null){
 }
 inputImagen.addEventListener('blur', validarImagen);
 btn_submit_form_generar.addEventListener('click', validarForm_generar);
+btn_submit_form_consultar.addEventListener('click', submitConsulta);
 // -------------------------------------------------
 
 if(localStorage.getItem('dark-mode') === 'true'){
