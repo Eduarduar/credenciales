@@ -692,11 +692,19 @@
                                 </select>
                             </div>
 
+                            <div class="mb-3">
+                                <label for="pass-insertar" class="form-label">Contraseña</label>
+                                <input type="text" name="pass-insertar" id="pass-insertar" class="form-control" placeholder="Ingresar contraseña">
+                                <div class="invalid-feedback">
+                                    Ingrese una contraseña valida.
+                                </div>
+                            </div>
+
                         </form>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                        <button type="button" id="submit-form-insertar_usuario" class="btn btn-primary" disabled>Confirmar</button>
+                        <button type="button" id="close-modal-form_insertar_usuario" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                        <button type="button" id="submit-form-insertar_usuario" class="btn btn-primary">Confirmar</button>
                     </div>
                 </div>
             </div>
