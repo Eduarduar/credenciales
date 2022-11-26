@@ -8,6 +8,8 @@ const buttons_Alumnos = document.querySelectorAll('.Registro_alumno');
 const btnSwitch = document.querySelector('#switch');
 
 const buttons_delete = document.querySelectorAll('.delete')
+
+const btnInsertUsuario = document.querySelector('#submit-form-insertar_usuario');
 // -----------------------------------------------------------------------------------
 
 // inputs ----------------------------------------------------------------------------
@@ -26,6 +28,32 @@ const input_filtro_historial_users = document.querySelector('#filtro_historial_u
 const input_select_filtro_credenciales = document.querySelector('#options-filtro_credenciales');
 const input_filtro_credenciales = document.querySelector('#filtro_credencial');
 // -----------------------------------------------------------------------------------
+
+// Variables -------------------------------------------------------------------------
+const inputs = document.querySelectorAll('form input');
+
+const expresiones = {
+	usuario: /^[a-zA-Z0-9\_\-]{5,25}$/, // Letras, numeros, guion y guion_bajo
+    nombre: /^[a-zA-ZÀ-ÿ\s]{1,25}$/,
+	password: /^.{0}\w{8,20}$/,  // 8 a 20 digitos.
+    passwordS: /^.{0}\w{1,20}$/, // 1 a 20 digitos
+	correo: /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/,
+    NoControl: /^\d{14}$/,
+    telefono: /^\d{10}$/,
+    CURP: /^[A-Z]{1}[AEIOU]{1}[A-Z]{2}[0-9]{2}(0[1-9]|1[0-2])(0[1-9]|1[0-9]|2[0-9]|3[0-1])[HM]{1}(AS|BC|BS|CC|CS|CH|CL|CM|DF|DG|GT|GR|HG|JC|MC|MN|MS|NT|NL|OC|PL|QT|QR|SP|SL|SR|TC|TS|TL|VZ|YN|ZS|NE)[B-DF-HJ-NP-TV-Z]{3}[0-9A-Z]{1}[0-9]{1}$/
+}
+
+insertUsuario = {
+    nombre: false,
+    apellido_p: false,
+    apellido_m: false,
+    correo: false,
+    telefono: false,
+    pass: false
+}
+
+// -----------------------------------------------------------------------------------
+
 
 // table -----------------------------------------------------------------------------
 const tablas = document.querySelectorAll('.table-responsive table');
@@ -272,11 +300,108 @@ const deleteCredencial = function (e){
         });
     }
 }
+
+const validarForm = (e) => {
+    switch (e.target.name) {
+        case 'user-insertar':
+            insertUsuario.user = validarCampo(expresiones.usuario, e.target.value, e.target.id);
+        break;
+        case 'nombre-insertar':
+            insertUsuario.nombre = validarCampo(expresiones.nombre, e.target.value, e.target.id);
+        break;
+        case 'apP-insertar':
+            insertUsuario.apellido_p = validarCampo(expresiones.nombre, e.target.value, e.target.id);
+        break;
+        case 'apM-insertar':
+            insertUsuario.apellido_m = validarCampo(expresiones.nombre, e.target.value, e.target.id);
+        break;
+        case 'correo-insertar':
+            insertUsuario.correo = validarCampo(expresiones.correo, e.target.value, e.target.id);
+        break;
+        case 'telefono-insertar':
+            insertUsuario.telefono = validarCampo(expresiones.telefono, e.target.value, e.target.id);
+            break;
+        case 'pass-insertar':
+            insertUsuario.pass = validarCampo(expresiones.password, e.target.value, e.target.id);
+        break;
+    }
+}
+
+const validarCampo = (exprecion, value, campo) => {
+    if (exprecion.test(value)){
+        document.getElementById(`${campo}`).classList.remove('is-invalid');
+        document.getElementById(`${campo}`).classList.add('is-valid');
+        return true;
+    }else{
+        document.getElementById(`${campo}`).classList.remove('is-valid');
+        document.getElementById(`${campo}`).classList.add('is-invalid');
+        return false;
+    }
+}
+
+const submitInsertUsuario = function(){
+    let usuario = document.querySelector('#user-insertar');
+    let nombre = document.querySelector('#nombre-insertar');
+    let ap_p = document.querySelector('#apP-insertar');
+    let ap_m = document.querySelector('#apM-insertar');
+    let correo = document.querySelector('#correo-insertar');
+    let telefono = document.querySelector('#telefono-insertar');
+    let rol = document.querySelector('#options-rol-insertar');
+    let pass = document.querySelector('#pass-insertar');
+
+    insertUsuario.user = validarCampo(expresiones.usuario, usuario.value, usuario.id);
+    insertUsuario.nombre = validarCampo(expresiones.nombre, nombre.value, nombre.id);
+    insertUsuario.apellido_p = validarCampo(expresiones.nombre, ap_p.value, ap_p.id);
+    insertUsuario.apellido_m = validarCampo(expresiones.nombre, ap_m.value, ap_m.id);
+    insertUsuario.correo = validarCampo(expresiones.correo, correo.value, correo.id);
+    insertUsuario.telefono = validarCampo(expresiones.telefono, telefono.value, telefono.id);
+    insertUsuario.pass = validarCampo(expresiones.password, pass.value, pass.id);
+
+
+    if (insertUsuario.user == true && insertUsuario.nombre == true && insertUsuario.apellido_p == true && insertUsuario.apellido_m == true && insertUsuario.correo == true && insertUsuario.telefono == true && insertUsuario.pass == true){
+        $.ajax({
+            url:"./db/queries.php",
+            type:"POST",
+            data:{
+                insertUsuario_usuario: usuario.value,
+                insertUsuario_nombre: nombre.value,
+                insertUsuario_ap_p: ap_p.value,
+                insertUsuario_ap_m: ap_m.value,
+                insertUsuario_correo: correo.value,
+                insertUsuario_telefono: telefono.value,
+                insertUsuario_rol: rol.value,
+                insertUsuario_pass: pass.value,
+                consulta_filtro_user: `SELECT ID, user, nombre, ap_paterno, ap_materno, telefono, mail, nombreRol, estado FROM usuarios, roles WHERE (usuarios.rol = roles.NoRol AND usuarios.ID <> ${user_session_id}) AND usuarios.nombre LIKE '%%';`
+            },
+            success: function(respuesta){
+                let request = JSON.parse(respuesta);
+                $('#container_registros_user').html(request);
+                $('#user-insertar').val('');
+                $('#nombre-insertar').val('');
+                $('#apP-insertar').val('');
+                $('#apM-insertar').val('');
+                $('#correo-insertar').val('');
+                $('#telefono-insertar').val('');
+                $('#pass-insertar').val('');
+                
+                $('#user-insertar').removeClass('is-valid');
+                $('#nombre-insertar').removeClass('is-valid');
+                $('#apP-insertar').removeClass('is-valid');
+                $('#apM-insertar').removeClass('is-valid');
+                $('#correo-insertar').removeClass('is-valid');
+                $('#telefono-insertar').removeClass('is-valid');
+                $('#pass-insertar').removeClass('is-valid');
+                document.querySelector('#close-modal-form_insertar_usuario').click();
+            }
+        });
+    }
+}
 // -----------------------------------------------------------------------------------
 
 // escuchadores ----------------------------------------------------------------------
 btn_logout_session.addEventListener('click', logout);
 btn_back.addEventListener('click', back);
+btnInsertUsuario.addEventListener('click', submitInsertUsuario);
 buttons_Usuarios.forEach((elemnt) => {
     elemnt.addEventListener('click', updateForm_modificar_usuario);
 });
@@ -316,6 +441,11 @@ input_filtro_credenciales.addEventListener(         'keyup',    filtrar_tabla_cr
 input_select_filtro_credenciales.addEventListener(  'focus',    filtrar_tabla_credenciales);
 input_select_filtro_credenciales.addEventListener(  'click',    filtrar_tabla_credenciales);
 input_select_filtro_credenciales.addEventListener(  'blur',     filtrar_tabla_credenciales);
+
+inputs.forEach((input) => {
+    input.addEventListener('keyup', validarForm);
+    input.addEventListener('blur', validarForm);
+});
 // -----------------------------------------------------------------------------------
 
 

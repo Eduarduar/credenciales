@@ -183,12 +183,30 @@
             return $datos;
         }
 
+        public function insertUsuario($user, $name, $apellido_p, $apellido_m, $correo, $telefono, $rol, $pass){
+            $md5 = md5($pass);
+            $pass = password_hash($md5, PASSWORD_DEFAULT, ['cost' => 10]);
+            $this->connect()->query("INSERT INTO usuarios VALUES (NULL, '$user', '$name', '$apellido_p', '$apellido_m', $telefono, '$correo', '$pass', $rol, 1);");
+        }
+
     }
 
     $consulta = new consultas();
 
     if (isset($_POST['id_consultar_usuario'])){
         echo json_encode($consulta->getUserInfo($_POST['id_consultar_usuario']));
+    }
+
+    if(isset($_POST['insertUsuario_usuario']) && isset($_POST['insertUsuario_nombre']) && isset($_POST['insertUsuario_ap_p']) && isset($_POST['insertUsuario_ap_m']) && isset($_POST['insertUsuario_correo']) && isset($_POST['insertUsuario_telefono']) && isset($_POST['insertUsuario_rol']) && isset($_POST['insertUsuario_pass'])){
+        $user = $_POST['insertUsuario_usuario']; // guardamos las variables
+        $name = $_POST['insertUsuario_nombre'];
+        $apellido_p = $_POST['insertUsuario_ap_p'];
+        $apellido_m = $_POST['insertUsuario_ap_m'];    
+        $correo = $_POST['insertUsuario_correo'];
+        $telefono = $_POST['insertUsuario_telefono'];
+        $rol = $_POST['insertUsuario_rol'];
+        $pass = $_POST['insertUsuario_pass'];
+        $consulta->insertUsuario($user, $name, $apellido_p, $apellido_m, $correo, $telefono, $rol, $pass); // insertamos el usuario en la base de datos
     }
 
     if (isset($_POST['deleteCredencial']) and isset($_POST['user'])){
