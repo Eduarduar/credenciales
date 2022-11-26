@@ -46,7 +46,7 @@
     function consultarCredencial($user_active ,$consulta, $NoControl, $curp){
         if (!$consulta->confirmAlumno($NoControl, $curp)){
             echo'<script>
-            alert("No estas registrado en la base de datos");
+            alert("Tu No. Control o tu CURP son invalidas.");
             
             window.location = "../";
             </script>';
@@ -105,7 +105,7 @@
             
             if (!$consulta->confirmAlumno($_POST['generator-NoControl'], $_POST['generator-CURP'])){
                 echo'<script>
-                alert("No estas registrado en la base de datos");
+                alert("Tu No. Control o tu CURP son invalidas.");
                 
                 window.location = "../";
                 </script>';
