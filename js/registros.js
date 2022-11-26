@@ -45,31 +45,33 @@ btnSwitch.addEventListener('click', () => {
 	}
 });
 const updateForm_modificar_usuario = function (e){
-    let id_consultar_usuario = e.target.id;
-    $.ajax({
-        url:'./db/queries.php',
-        type: 'POST',
-        data: {id_consultar_usuario: id_consultar_usuario},
-        success: function (respuesta) {
-            let request = JSON.parse(respuesta);
-            $("#options-rol-modificar option[value=1]").attr("selected",false);
-            $("#options-rol-modificar option[value=2]").attr("selected",false);
-            $("#options-estado-modificar option[value=1]").attr("selected",false);
-            $("#options-estado-modificar option[value=0]").attr("selected",false);
-            $('#user-modificar').val(request.user);
-            $('#nombre-modificar').val(request.nombre);
-            $('#apP-modificar').val(request.ap_paterno);
-            $('#apM-modificar').val(request.ap_materno);
-            $('#correo-modificar').val(request.mail);
-            $('#telefono-modificar').val(request.telefono);
-            if (request.rol == 'admin'){
-                $("#options-rol-modificar option[value=1]").attr("selected",true);
-            }else{
-                $("#options-rol-modificar option[value=2]").attr("selected",true);
+    if (rol == 1){
+        let id_consultar_usuario = e.target.id;
+        $.ajax({
+            url:'./db/queries.php',
+            type: 'POST',
+            data: {id_consultar_usuario: id_consultar_usuario},
+            success: function (respuesta) {
+                let request = JSON.parse(respuesta);
+                $("#options-rol-modificar option[value=1]").attr("selected",false);
+                $("#options-rol-modificar option[value=2]").attr("selected",false);
+                $("#options-estado-modificar option[value=1]").attr("selected",false);
+                $("#options-estado-modificar option[value=0]").attr("selected",false);
+                $('#user-modificar').val(request.user);
+                $('#nombre-modificar').val(request.nombre);
+                $('#apP-modificar').val(request.ap_paterno);
+                $('#apM-modificar').val(request.ap_materno);
+                $('#correo-modificar').val(request.mail);
+                $('#telefono-modificar').val(request.telefono);
+                if (request.rol == 'admin'){
+                    $("#options-rol-modificar option[value=1]").attr("selected",true);
+                }else{
+                    $("#options-rol-modificar option[value=2]").attr("selected",true);
+                }
+                $("#options-estado-modificar option[value="+ request.estado +"]").attr("selected",true);
             }
-            $("#options-estado-modificar option[value="+ request.estado +"]").attr("selected",true);
-        }
-    });
+        });
+    }
 }
 const updateForm_modificar_alumno = function (e){
     let NoControl_consultar_alumno = e.target.id;
@@ -124,30 +126,32 @@ const back = function (){
     window.location = './'  
 }
 const filtrar_tabla_user = function () {
-    const filtro = '%' + input_filtro_users.value.replace(/\s+/g, ' ') + '%';
-    let consulta_filtro_user;
-    if (input_select_filtro_users.value == ''){    
-        consulta_filtro_user = `SELECT ID, user, nombre, ap_paterno, ap_materno, telefono, mail, nombreRol, estado FROM usuarios, roles WHERE (usuarios.rol = roles.NoRol and usuarios.ID <> ${user_session_id}) and (roles.nombreRol LIKE'${filtro}' or usuarios.ID LIKE'${filtro}' or usuarios.user LIKE'${filtro}' or usuarios.nombre LIKE'${filtro}' or usuarios.ap_paterno LIKE'${filtro}' or usuarios.ap_materno LIKE'${filtro}' or usuarios.telefono LIKE'${filtro}' or usuarios.mail LIKE'${filtro}' or usuarios.estado LIKE'${filtro}');`;
-    }else if (input_select_filtro_users.value == 'nombreRol'){
-        consulta_filtro_user = `SELECT ID, user, nombre, ap_paterno, ap_materno, telefono, mail, nombreRol, estado FROM usuarios, roles WHERE usuarios.rol = roles.NoRol and usuarios.ID <> ${user_session_id} and roles.nombreRol LIKE'${filtro}';`;
-    }else{
-        consulta_filtro_user = `SELECT ID, user, nombre, ap_paterno, ap_materno, telefono, mail, nombreRol, estado FROM usuarios, roles WHERE usuarios.rol = roles.NoRol and usuarios.ID <> ${user_session_id} and usuarios.${input_select_filtro_users.value} LIKE'${filtro}';`;
-    }
-    $.ajax({
-        url:'./db/queries.php',
-        type: 'POST',
-        data: {consulta_filtro_user: consulta_filtro_user},
-        success: function (respuesta) {
-            document.querySelectorAll('.Registro_usuario').forEach((elemnt) => {
-                elemnt.removeEventListener('click', updateForm_modificar_usuario);
-            });
-            let request = JSON.parse(respuesta);
-            $('#container_registros_user').html(request);
-            document.querySelectorAll('.Registro_usuario').forEach((elemnt) => {
-                elemnt.addEventListener('click', updateForm_modificar_usuario);
-            });
+    if (rol == 1){
+        const filtro = '%' + input_filtro_users.value.replace(/\s+/g, ' ') + '%';
+        let consulta_filtro_user;
+        if (input_select_filtro_users.value == ''){    
+            consulta_filtro_user = `SELECT ID, user, nombre, ap_paterno, ap_materno, telefono, mail, nombreRol, estado FROM usuarios, roles WHERE (usuarios.rol = roles.NoRol and usuarios.ID <> ${user_session_id}) and (roles.nombreRol LIKE'${filtro}' or usuarios.ID LIKE'${filtro}' or usuarios.user LIKE'${filtro}' or usuarios.nombre LIKE'${filtro}' or usuarios.ap_paterno LIKE'${filtro}' or usuarios.ap_materno LIKE'${filtro}' or usuarios.telefono LIKE'${filtro}' or usuarios.mail LIKE'${filtro}' or usuarios.estado LIKE'${filtro}');`;
+        }else if (input_select_filtro_users.value == 'nombreRol'){
+            consulta_filtro_user = `SELECT ID, user, nombre, ap_paterno, ap_materno, telefono, mail, nombreRol, estado FROM usuarios, roles WHERE usuarios.rol = roles.NoRol and usuarios.ID <> ${user_session_id} and roles.nombreRol LIKE'${filtro}';`;
+        }else{
+            consulta_filtro_user = `SELECT ID, user, nombre, ap_paterno, ap_materno, telefono, mail, nombreRol, estado FROM usuarios, roles WHERE usuarios.rol = roles.NoRol and usuarios.ID <> ${user_session_id} and usuarios.${input_select_filtro_users.value} LIKE'${filtro}';`;
         }
-    });
+        $.ajax({
+            url:'./db/queries.php',
+            type: 'POST',
+            data: {consulta_filtro_user: consulta_filtro_user},
+            success: function (respuesta) {
+                document.querySelectorAll('.Registro_usuario').forEach((elemnt) => {
+                    elemnt.removeEventListener('click', updateForm_modificar_usuario);
+                });
+                let request = JSON.parse(respuesta);
+                $('#container_registros_user').html(request);
+                document.querySelectorAll('.Registro_usuario').forEach((elemnt) => {
+                    elemnt.addEventListener('click', updateForm_modificar_usuario);
+                });
+            }
+        });
+    }
 }
 const filtrar_tabla_alumno = function () {
     const filtro = '%' + input_filtro_alumnos.value.replace(/\s+/g, ' ') + '%';

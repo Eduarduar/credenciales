@@ -13,7 +13,7 @@ const btn_submit_form_consultar = document.querySelector('#btnConsultar');
 // -------------------------------------------------------------------------------
 
 // inputs -------------------------------------------------
-    const inputs = document.querySelectorAll('form input');
+    const inputs = document.querySelectorAll('form input'); // obtenemos todos los inputs en el documento que esten dentro de un form.
 // --------------------------------------------------------
 
 // forms ----------------------------------------------------------------------
@@ -24,7 +24,7 @@ const form_consultarF   = document.querySelector('.form_consulta');
 // ----------------------------------------------------------------------------
 
 // variables ---------------------------------------
-const expresiones = {
+const expresiones = {                                                               // expreciones para validar los inputs
 	usuario: /^[a-zA-Z0-9\_\-]{5,25}$/, // Letras, numeros, guion y guion_bajo
 	password: /^.{0}\w{8,20}$/,  // 8 a 20 digitos.
     passwordS: /^.{0}\w{1,20}$/, // 1 a 20 digitos
@@ -32,6 +32,8 @@ const expresiones = {
     NoControl: /^\d{14}$/,
     CURP: /^[A-Z]{1}[AEIOU]{1}[A-Z]{2}[0-9]{2}(0[1-9]|1[0-2])(0[1-9]|1[0-9]|2[0-9]|3[0-1])[HM]{1}(AS|BC|BS|CC|CS|CH|CL|CM|DF|DG|GT|GR|HG|JC|MC|MN|MS|NT|NL|OC|PL|QT|QR|SP|SL|SR|TC|TS|TL|VZ|YN|ZS|NE)[B-DF-HJ-NP-TV-Z]{3}[0-9A-Z]{1}[0-9]{1}$/
 }
+
+ // creamos las clases con las variables correspondientes a cada input de cada formulario.
 
 const userLogin = {
     user: false,
@@ -51,10 +53,12 @@ const generar = {
 // -------------------------------------------------
 
 // funciones ---------------------------------------
+
+ // con esta función validamos la imagen que suban 
 const validarImagen = function(){
     let error = false;
     try{
-        if (inputImagen.files[0].size > 5242880){ // no sea mallor a un 5Mb.
+        if (inputImagen.files[0].size > 5242880 || inputImagen.files[0].name.includes('.png')){ // no sea mallor a un 5Mb.
             inputImagen.value = null;
             if (inputImagen.classList.value.includes('is-valid'))
             inputImagen.classList.remove('is-valid');
@@ -75,7 +79,7 @@ const validarImagen = function(){
         return false;
     }
 }
-
+ // con esta funcion validamos el formulario generar antes de ser enviado.
 const validarForm_generar = function (){
     let NoControl = document.querySelector('#generator-NoControl');
     let Curp = document.querySelector('#generator-CURP');
@@ -94,7 +98,7 @@ const validarForm_generar = function (){
         }
     }
 }
-
+ // creamos un escuchador para el boton de temas.
 btnSwitch.addEventListener('click', () => {
 	document.body.classList.toggle('lightMode');
 	btnSwitch.classList.toggle('active');
@@ -104,14 +108,14 @@ btnSwitch.addEventListener('click', () => {
 		localStorage.setItem('dark-mode', 'true');
 	}
 });
-
+ // funcion que cambia los formularios uno por otro cambiando la clase.
 const changeForms = function (){
     form_consultar.classList.toggle('hide');
     form_generar.classList.toggle('hide');
     btn_mostar_consulta.classList.toggle('hide');
     btn_mostrar_generar.classList.toggle('hide');
 }
-
+ // funición que se encarga de validar todos los inputs segun su name.
 const validarForm = (e) => {
     switch (e.target.name) {
         case 'user':
@@ -137,7 +141,7 @@ const validarForm = (e) => {
         break;
     }
 }
-
+ // funcion que valida los campos uno por uno.
 const validarCampo = (exprecion, value, campo) => {
     if (exprecion.test(value)){
         document.getElementById(`${campo}`).classList.remove('is-invalid');
@@ -149,7 +153,7 @@ const validarCampo = (exprecion, value, campo) => {
         return false;
     }
 }
-
+ // función que valida el formulario Login antes de ser enviado.
 const submitLogin = function () {
     let user = document.querySelector('#user');
     let pass = document.querySelector('#pass');
@@ -159,7 +163,7 @@ const submitLogin = function () {
         form_login.submit();
     }
 }
-
+ // función que valida el formulario consulta antes de ser enviado.
 const submitConsulta = function (){
     let NoControl = document.querySelector('#consulta-NoControl');
     let curp = document.querySelector('#consulta-CURP');
@@ -168,13 +172,6 @@ const submitConsulta = function (){
     if (consultar.NoControl && consultar.curp){
         form_consultarF.submit();
     }
-}
-
-const logout = function () {
-    window.location = './db/logout';
-}
-const registros = function () {
-    window.location = './registros';
 }
 // -------------------------------------------------
 
@@ -188,8 +185,8 @@ inputs.forEach((input) => {
 if (btn_submit_login != null)
 btn_submit_login.addEventListener('click', submitLogin);
 if (btn_logout_session != null){
-    btn_logout_session.addEventListener('click', logout);
-    btn_registros.addEventListener('click', registros);
+    btn_logout_session.addEventListener('click', () => {window.location = './db/logout';});
+    btn_registros.addEventListener('click', () => {window.location = './registros';});
 }
 inputImagen.addEventListener('blur', validarImagen);
 btn_submit_form_generar.addEventListener('click', validarForm_generar);
@@ -204,9 +201,6 @@ if(localStorage.getItem('dark-mode') === 'true'){
 	btnSwitch.classList.remove('active');
 }
 
-
-let NoControl = document.querySelector('#generator-NoControl');
-let Curp = document.querySelector('#generator-CURP');
-inputImagen.value = null;
-Curp.value = '';
-NoControl.value = '';
+if(window.history.replaceState){
+    window.history.replaceState(null, null, window.location.href);
+}
