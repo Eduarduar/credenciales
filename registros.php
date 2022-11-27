@@ -4,7 +4,7 @@
     date_default_timezone_set("America/Mexico_City");
     include_once './db/queries.php';
     $consulta = new consultas();
-
+    $error = false;
     if(!isset($_SESSION['id']) and !isset($_SESSION['user']) and !isset($_SESSION['rol'])){
         header('location: ./');
     }else{
@@ -26,6 +26,20 @@
             header('location: ./db/logout');
         }
         
+    }
+
+    if (isset($_POST['user-session']) and isset($_POST['nombre-session']) and isset($_POST['apP-session']) and isset($_POST['apM-session']) and isset($_POST['correo-session']) and isset($_POST['telefono-session'])){
+        $user = $_POST['user-session'];
+        $nombre = $_POST['nombre-session'];
+        $apP = $_POST['apP-session'];
+        $apM = $_POST['apM-session'];
+        $correo = $_POST['correo-session'];
+        $telefono = $_POST['telefono-session'];
+        if ($consulta->updateUsuarioSession($_SESSION['id'], $user, $nombre, $apP, $apM, $correo, $telefono)){
+            header('location: ./registros');
+        }else{
+            $error = true;
+        }
     }
 
 ?>
@@ -520,11 +534,11 @@
                     </div>
                     <div class="modal-body">
 
-                        <form style="max-width: 450px" action="./" class="form-modificar_usuario_sesion" method="post">
+                        <form style="max-width: 450px" action="./registros" class="form-modificar_usuario_sesion" method="post">
 
                             <div class="mb-3">
                                 <label for="user-session" class="form-label">Usuario:</label>
-                                <input type="text" name="user-session" id="user-session" class="form-control" placeholder="Ingresa tu nombre de usuario" value="<?php echo $userInfo['user']; ?>">
+                                <input type="text" name="user-session" id="user-session" class="form-control is-valid" placeholder="Ingresa tu nombre de usuario" value="<?php echo $userInfo['user']; ?>">
                                 <div class="invalid-feedback">
                                     Ingrese un usuario valido.
                                 </div>
@@ -532,7 +546,7 @@
 
                             <div class="mb-3">
                                 <label for="nombre-session" class="form-label">Nombre:</label>
-                                <input type="text" name="nombre-session" id="nombre-session" class="form-control" placeholder="Ingresa tu nombre" value="<?php echo $userInfo['nombre']; ?>">
+                                <input type="text" name="nombre-session" id="nombre-session" class="form-control is-valid" placeholder="Ingresa tu nombre" value="<?php echo $userInfo['nombre']; ?>">
                                 <div class="invalid-feedback">
                                     Ingrese un nombre valido.
                                 </div>
@@ -540,7 +554,7 @@
 
                             <div class="mb-3">
                                 <label for="apP-session" class="form-label">Apellido paterno:</label>
-                                <input type="text" name="apP-session" id="apP-session" class="form-control" placeholder="Ingresa tu apellido" value="<?php echo $userInfo['ap_paterno']; ?>">
+                                <input type="text" name="apP-session" id="apP-session" class="form-control is-valid" placeholder="Ingresa tu apellido" value="<?php echo $userInfo['ap_paterno']; ?>">
                                 <div class="invalid-feedback">
                                     Ingrese un apellido valido.
                                 </div>
@@ -548,7 +562,7 @@
 
                             <div class="mb-3">
                                 <label for="apM-session" class="form-label">Apellido materno</label>
-                                <input type="text" name="apM-session" id="apM-session" class="form-control" placeholder="Ingresa tu apellido" value="<?php echo $userInfo['ap_materno']; ?>">
+                                <input type="text" name="apM-session" id="apM-session" class="form-control is-valid" placeholder="Ingresa tu apellido" value="<?php echo $userInfo['ap_materno']; ?>">
                                 <div class="invalid-feedback">
                                     Ingrese un apellido valido.
                                 </div>
@@ -556,7 +570,7 @@
 
                             <div class="mb-3">
                                 <label for="correo-session" class="form-label">Correo</label>
-                                <input type="email" name="correo-session" id="correo-session" class="form-control" placeholder="Ingresa tu correo" value="<?php echo $userInfo['mail']; ?>">
+                                <input type="email" name="correo-session" id="correo-session" class="form-control is-valid" placeholder="Ingresa tu correo" value="<?php echo $userInfo['mail']; ?>">
                                 <div class="invalid-feedback">
                                     Ingrese un correo valido.
                                 </div>
@@ -564,7 +578,7 @@
 
                             <div class="mb-3">
                                 <label for="telefono-session" class="form-label">Telefono</label>
-                                <input type="text" name="telefono-session" id="telefono-session" class="form-control" placeholder="Ingresa tu telefono" value="<?php echo $userInfo['telefono']; ?>">
+                                <input type="text" name="telefono-session" id="telefono-session" class="form-control is-valid" placeholder="Ingresa tu telefono" value="<?php echo $userInfo['telefono']; ?>">
                                 <div class="invalid-feedback">
                                     Ingrese un telefono valido.
                                 </div>
@@ -576,7 +590,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                        <button type="button" id="submit-modificar_usuario_sesion" class="btn btn-primary" disabled>Confirmar</button>
+                        <button type="button" id="submit-modificar_usuario_session" class="btn btn-primary" disabled>Confirmar</button>
                     </div>
                 </div>
             </div>
@@ -949,6 +963,15 @@
         </div>
         <script>
 
+            const datosUsuarioSession = {
+                user: '<?php echo $userInfo['user']; ?>',
+                nombre: '<?php echo $userInfo['nombre']; ?>',
+                apP: '<?php echo $userInfo['ap_paterno']; ?>',
+                apM: '<?php echo $userInfo['ap_materno']; ?>',
+                correo: '<?php echo $userInfo['mail']; ?>',
+                telefono: '<?php echo $userInfo['telefono']; ?>'
+            }
+
             const user_session_id = <?php echo $_SESSION['id']; ?>;
             const rol = <?php echo $_SESSION['rol']; ?>
 
@@ -956,6 +979,28 @@
         <script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
         <script src="./js/js-bootstrap/bootstrap.min.js"></script>
         <script src="./js/registros.js"></script>
+        <script>
+            <?php
+            
+                if ($error){
+
+                    ?>
+                    
+                        btn_settings.click();
+
+                        $('#user-session').val('<?php echo $_POST['user-session']; ?>');
+                        $('#user-session + .invalid-feedback').html('Este nombre de usuario no esta disponible');
+
+                        setTimeout(() => {
+                            $('#user-session + .invalid-feedback').html('Ingrese un usuario valido.');
+                        }, 2000);
+                    
+                    <?php
+
+                }
+
+            ?>
+        </script>
 
     </body>
 </html>
