@@ -210,12 +210,20 @@
             return false;
         }
 
+        public function setAlumno($NoControl, $nombre, $apellido_p, $apellido_m, $curp, $esp, $generacion, $nss){
+            $this->connect()->query("INSERT INTO alumnos VALUES ($NoControl, '$nombre', '$apellido_p', '$apellido_m',  $esp, '$curp', '$generacion', $nss, 1);");
+        }
+
     }
 
     $consulta = new consultas();
 
     if (isset($_POST['id_consultar_usuario'])){
         echo json_encode($consulta->getUserInfo($_POST['id_consultar_usuario']));
+    }
+
+    if (isset($_POST['insertAlumno_nombre']) && isset($_POST['insertAlumno_ap_p']) && isset($_POST['insertAlumno_aP_m']) && isset($_POST['insertAlumno_esp']) && isset($_POST['insertAlumno_gen']) && isset($_POST['insertAlumno_nss']) && isset($_POST['insertAlumno_NoControl']) && isset($_POST['insertAlumno_curp'])){
+        $consulta->setAlumno($_POST['insertAlumno_NoControl'], $_POST['insertAlumno_nombre'], $_POST['insertAlumno_ap_p'], $_POST['insertAlumno_aP_m'], $_POST['insertAlumno_curp'], $_POST['insertAlumno_esp'], $_POST['insertAlumno_gen'], $_POST['insertAlumno_nss']);
     }
 
     if(isset($_POST['insertUsuario_usuario']) && isset($_POST['insertUsuario_nombre']) && isset($_POST['insertUsuario_ap_p']) && isset($_POST['insertUsuario_ap_m']) && isset($_POST['insertUsuario_correo']) && isset($_POST['insertUsuario_telefono']) && isset($_POST['insertUsuario_rol']) && isset($_POST['insertUsuario_pass']) && isset($_POST['id_user'])){
