@@ -13,6 +13,7 @@ const buttons_delete = document.querySelectorAll('.delete')
 const btnInsertUsuario = document.querySelector('#submit-form-insertar_usuario');
 
 const btnUpdateUsuarioSession = document.querySelector('#submit-modificar_usuario_session');
+const btnInsertAlumno = document.querySelector('#submit-form-insertar_alumno');
 // -----------------------------------------------------------------------------------
 
 // inputs ----------------------------------------------------------------------------
@@ -45,7 +46,9 @@ const expresiones = {
 	correo: /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/,
     NoControl: /^\d{14}$/,
     telefono: /^\d{10}$/,
-    CURP: /^[A-Z]{1}[AEIOU]{1}[A-Z]{2}[0-9]{2}(0[1-9]|1[0-2])(0[1-9]|1[0-9]|2[0-9]|3[0-1])[HM]{1}(AS|BC|BS|CC|CS|CH|CL|CM|DF|DG|GT|GR|HG|JC|MC|MN|MS|NT|NL|OC|PL|QT|QR|SP|SL|SR|TC|TS|TL|VZ|YN|ZS|NE)[B-DF-HJ-NP-TV-Z]{3}[0-9A-Z]{1}[0-9]{1}$/
+    CURP: /^[A-Z]{1}[AEIOU]{1}[A-Z]{2}[0-9]{2}(0[1-9]|1[0-2])(0[1-9]|1[0-9]|2[0-9]|3[0-1])[HM]{1}(AS|BC|BS|CC|CS|CH|CL|CM|DF|DG|GT|GR|HG|JC|MC|MN|MS|NT|NL|OC|PL|QT|QR|SP|SL|SR|TC|TS|TL|VZ|YN|ZS|NE)[B-DF-HJ-NP-TV-Z]{3}[0-9A-Z]{1}[0-9]{1}$/,
+    generacion: /^[0-9]{4}\s[\-]{1}\s[0-9]{4}$/,
+    nss: /^\d{10}$/
 }
 
 const insertUsuario = {
@@ -72,7 +75,9 @@ const insertAlumno = {
     apM: false,
     esp: false,
     gncion: false,
-    nss: false
+    nss: false,
+    NoControl: false,
+    curp: false
 }
 
 // -----------------------------------------------------------------------------------
@@ -388,6 +393,22 @@ const validarForm = (e) => {
             insertAlumno.apM = validarCampo(expresiones.nombre, e.target.value, e.target.id);
         break;
 
+        case 'generacion-insertar_alumno':
+            insertAlumno.gncion = validarCampo(expresiones.generacion, e.target.value, e.target.id);
+        break;
+
+        case 'NSS-insertar_alumno':
+            insertAlumno.nss = validarCampo(expresiones.nss, e.target.value, e.target.id);
+        break;
+
+        case 'NoControl-insertar_alumno':
+            insertAlumno.NoControl = validarCampo(expresiones.NoControl, e.target.value, e.target.id);
+        break;
+
+        case 'Curp-insertar_alumno':
+            insertAlumno.curp = validarCampo(expresiones.CURP, e.target.value, e.target.id);
+        break;
+
     }
 }
 
@@ -462,8 +483,14 @@ const submitInsertUsuario = function(){
             success: function(respuesta){
                 if (respuesta.charAt(0) != 1){
                     respuesta = respuesta.substring(1);
+                    document.querySelectorAll('.Registro_usuario').forEach((elemnt) => {
+                        elemnt.removeEventListener('click', updateForm_modificar_usuario);
+                    });
                     let request = JSON.parse(respuesta);
                     $('#container_registros_user').html(request);
+                    document.querySelectorAll('.Registro_usuario').forEach((elemnt) => {
+                        elemnt.addEventListener('click', updateForm_modificar_usuario);
+                    });
                     $('#user-insertar').val('');
                     $('#nombre-insertar').val('');
                     $('#apP-insertar').val('');
@@ -492,6 +519,75 @@ const submitInsertUsuario = function(){
         });
     }
 }
+
+const submitFormInsertAlumno = function(){
+    let nombre = document.querySelector('#nombre-insertar_alumno');
+    let ap_paterno = document.querySelector('#apP-insertar_alumno');
+    let ap_materno = document.querySelector('#apM-insertar_alumno');
+    let especialidades = document.querySelector('#options-ESP-insertar_alumno');
+    let generacion = document.querySelector('#generacion-insertar_alumno');
+    let nss = document.querySelector('#NSS-insertar_alumno');
+    let NoControl = document.querySelector('#NoControl-insertar_alumno');
+    let curp = document.querySelector('#Curp-insertar_alumno');
+    insertAlumno.nombre = validarCampo(expresiones.nombre, nombre.value, nombre.id);
+    insertAlumno.apP = validarCampo(expresiones.nombre, ap_paterno.value, ap_paterno.id);
+    insertAlumno.apM = validarCampo(expresiones.nombre, ap_materno.value, ap_materno.id);
+    insertAlumno.generacion = validarCampo(expresiones.generacion, generacion.value, generacion.id);
+    insertAlumno.nss = validarCampo(expresiones.nss, nss.value, nss.id);
+    insertAlumno.NoControl = validarCampo(expresiones.NoControl, NoControl.value, NoControl.id);
+    insertAlumno.curp = validarCampo(expresiones.CURP, curp.value, curp.id);
+    if (especialidades.value > 0 && especialidades.value < 7){
+        insertAlumno.esp = true;
+    }
+    if(insertAlumno.nombre && insertAlumno.apP && insertAlumno.apM && insertAlumno.esp && insertAlumno.generacion && insertAlumno.nss && insertAlumno.NoControl && insertAlumno.curp){
+        $.ajax({
+            url:'./db/queries.php',
+            type:'POST',
+            data:{
+                insertAlumno_nombre: nombre.value,
+                insertAlumno_ap_p: ap_paterno.value,
+                insertAlumno_aP_m: ap_materno.value,
+                insertAlumno_esp: especialidades.value,
+                insertAlumno_gen: generacion.value,
+                insertAlumno_nss: nss. value,
+                insertAlumno_NoControl: NoControl.value,
+                insertAlumno_curp: curp.value,
+                consulta_filtro_alumno: "SELECT NoControl, nombre, ap_paterno, ap_materno, nombreEspecialidad, curp, generacion, NSS, estado FROM alumnos, especialidades WHERE alumnos.especialidad = especialidades.NoEspecialidad and alumnos.NoControl LIKE'%%';"
+            },
+            success: function (respuesta){
+                document.querySelectorAll('.Registro_alumno').forEach((elemnt) => {
+                    elemnt.removeEventListener('click', updateForm_modificar_alumno);
+                });
+                let request = JSON.parse(respuesta);
+                $('#container_registros_alumnos').html(request);
+                document.querySelectorAll('.Registro_alumno').forEach((elemnt) => {
+                    elemnt.addEventListener('click', updateForm_modificar_alumno);
+                });
+
+                $('#nombre-insertar_alumno').val('');
+                $('#apP-insertar_alumno').val('');
+                $('#apM-insertar_alumno').val('');
+                $('#options-ESP-insertar_alumno').val('');
+                $('#generacion-insertar_alumno').val('');
+                $('#NSS-insertar_alumno').val('');
+                $('#NoControl-insertar_alumno').val('');
+                $('#Curp-insertar_alumno').val('');
+
+                
+                $('#nombre-insertar_alumno').removeClass('is-valid');
+                $('#apP-insertar_alumno').removeClass('is-valid');
+                $('#apM-insertar_alumno').removeClass('is-valid');
+                $('#options-ESP-insertar_alumno').removeClass('is-valid');
+                $('#generacion-insertar_alumno').removeClass('is-valid');
+                $('#NSS-insertar_alumno').removeClass('is-valid');
+                $('#NoControl-insertar_alumno').removeClass('is-valid');
+                $('#Curp-insertar_alumno').removeClass('is-valid');
+
+                document.querySelector('#close-form-insertar_alumno').click();
+            }
+        });
+    }
+}
 // -----------------------------------------------------------------------------------
 
 // escuchadores ----------------------------------------------------------------------
@@ -500,6 +596,7 @@ btnUpdateUsuarioSession.addEventListener('click', ()=>{
         formUpdateUsuarioSession.submit();
     }
 });
+btnInsertAlumno.addEventListener('click', submitFormInsertAlumno);
 btn_logout_session.addEventListener('click', () => {window.location = './db/logout'});
 btn_back.addEventListener('click', () => {window.location = './'});
 btnInsertUsuario.addEventListener('click', submitInsertUsuario);

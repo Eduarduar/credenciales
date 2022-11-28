@@ -43,7 +43,6 @@
     }
 
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -735,6 +734,14 @@
                         <form style="max-width: 450px" action="./" class="form-insertar_alumno" method="post">
 
                             <div class="mb-3">
+                                <label for="nombre-insertar_alumno" class="form-label">NoControl:</label>
+                                <input type="text" name="NoControl-insertar_alumno" id="NoControl-insertar_alumno" class="form-control" placeholder="Ingresar numero de control">
+                                <div class="invalid-feedback">
+                                    Ingrese un numero de control valido.
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
                                 <label for="nombre-insertar_alumno" class="form-label">Nombre:</label>
                                 <input type="text" name="nombre-insertar_alumno" id="nombre-insertar_alumno" class="form-control" placeholder="Ingresar nombre">
                                 <div class="invalid-feedback">
@@ -772,6 +779,14 @@
                             </div>
 
                             <div class="mb-3">
+                                <label for="nombre-insertar_alumno" class="form-label">Curp:</label>
+                                <input type="text" name="Curp-insertar_alumno" id="Curp-insertar_alumno" class="form-control" placeholder="Ingresar Curp">
+                                <div class="invalid-feedback">
+                                    Ingrese una Curp valida.
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
                                 <label for="generacion-insertar_alumno" class="form-label">Generación</label>
                                 <input type="text" name="generacion-insertar_alumno" id="generacion-insertar_alumno" class="form-control" placeholder="ejemplo: 2000 - 2003">
                                 <div class="invalid-feedback">
@@ -790,8 +805,8 @@
                         </form>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                        <button type="button" id="submit-form-insertar_alumno" class="btn btn-primary" disabled>Confirmar</button>
+                        <button type="button" id="close-form-insertar_alumno" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                        <button type="button" id="submit-form-insertar_alumno" class="btn btn-primary" >Confirmar</button>
                     </div>
                 </div>
             </div>
@@ -976,7 +991,7 @@
             const rol = <?php echo $_SESSION['rol']; ?>
 
         </script>
-        <script src="./js/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
+        <script src="./js/jquery-3.6.1.min.js"></script>
         <script src="./js/js-bootstrap/bootstrap.min.js"></script>
         <script src="./js/registros.js"></script>
         <script>
