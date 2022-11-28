@@ -66,6 +66,15 @@ const updateUsuarioSession = {
     telefono: true
 }
 
+const insertAlumno = {
+    nombre: false,
+    apP: false,
+    apM: false,
+    esp: false,
+    gncion: false,
+    nss: false
+}
+
 // -----------------------------------------------------------------------------------
 
 
@@ -331,7 +340,8 @@ const validarForm = (e) => {
         break;
         case 'telefono-insertar':
             insertUsuario.telefono = validarCampo(expresiones.telefono, e.target.value, e.target.id);
-            break;
+        break;
+        
         case 'pass-insertar':
             insertUsuario.pass = validarCampo(expresiones.password, e.target.value, e.target.id);
         break;
@@ -365,6 +375,19 @@ const validarForm = (e) => {
             updateUsuarioSession.telefono = validarCampo(expresiones.telefono, e.target.value, e.target.id);
             validarCambios();
         break;
+        
+        case 'nombre-insertar_alumno':
+            insertAlumno.nombre = validarCampo(expresiones.nombre, e.target.value, e.target.id);
+        break;
+
+        case 'apP-insertar_alumno':
+            insertAlumno.apP = validarCampo(expresiones.nombre, e.target.value, e.target.id);
+        break;
+
+        case 'apM-insertar_alumno':
+            insertAlumno.apM = validarCampo(expresiones.nombre, e.target.value, e.target.id);
+        break;
+
     }
 }
 
