@@ -39,6 +39,19 @@
             }
             return false;
         }
+        
+        public function confirmarUserByUser($user, $id = null){
+            if ($id == null){
+                $query = $this->connect()->prepare("SELECT user FROM usuarios WHERE user = '$user';");
+            }else{
+                $query = $this->connect()->prepare("SELECT user FROM usuarios WHERE user = '$user' AND ID <> $id;");
+            }
+            $query->execute();
+            if ($query->rowCount()){
+                return true;
+            }
+            return false;
+        }
 
         public function getUserInfo($id){
             $query = $this->connect()->prepare("SELECT ID, user, nombre, ap_paterno, ap_materno, telefono, mail, nombreRol, estado FROM usuarios, roles WHERE usuarios.ID = $id AND usuarios.rol = roles.NoRol;");
@@ -189,6 +202,14 @@
             $this->connect()->query("INSERT INTO usuarios VALUES (NULL, '$user', '$name', '$apellido_p', '$apellido_m', $telefono, '$correo', '$pass', $rol, 1);");
         }
 
+        public function updateUsuarioSession($ID ,$user, $nombre, $apP, $apM, $correo, $telefono){
+            if (!$this->confirmarUserByUser($user, $ID)){
+                $this->connect()->query("UPDATE usuarios SET user = '$user', nombre = '$nombre', ap_paterno = '$apP', ap_materno = '$apM', telefono = $telefono, mail = '$correo' WHERE ID = $ID;");
+                return true;
+            }
+            return false;
+        }
+
     }
 
     $consulta = new consultas();
@@ -197,16 +218,26 @@
         echo json_encode($consulta->getUserInfo($_POST['id_consultar_usuario']));
     }
 
-    if(isset($_POST['insertUsuario_usuario']) && isset($_POST['insertUsuario_nombre']) && isset($_POST['insertUsuario_ap_p']) && isset($_POST['insertUsuario_ap_m']) && isset($_POST['insertUsuario_correo']) && isset($_POST['insertUsuario_telefono']) && isset($_POST['insertUsuario_rol']) && isset($_POST['insertUsuario_pass'])){
-        $user = $_POST['insertUsuario_usuario']; // guardamos las variables
-        $name = $_POST['insertUsuario_nombre'];
-        $apellido_p = $_POST['insertUsuario_ap_p'];
-        $apellido_m = $_POST['insertUsuario_ap_m'];    
-        $correo = $_POST['insertUsuario_correo'];
-        $telefono = $_POST['insertUsuario_telefono'];
-        $rol = $_POST['insertUsuario_rol'];
-        $pass = $_POST['insertUsuario_pass'];
-        $consulta->insertUsuario($user, $name, $apellido_p, $apellido_m, $correo, $telefono, $rol, $pass); // insertamos el usuario en la base de datos
+    if(isset($_POST['insertUsuario_usuario']) && isset($_POST['insertUsuario_nombre']) && isset($_POST['insertUsuario_ap_p']) && isset($_POST['insertUsuario_ap_m']) && isset($_POST['insertUsuario_correo']) && isset($_POST['insertUsuario_telefono']) && isset($_POST['insertUsuario_rol']) && isset($_POST['insertUsuario_pass']) && isset($_POST['id_user'])){
+        $user = $_POST['insertUsuario_usuario']; 
+        if (!$consulta->confirmarUserByUser($user)){
+            $name = $_POST['insertUsuario_nombre']; // guardamos las variables
+            $apellido_p = $_POST['insertUsuario_ap_p'];
+            $apellido_m = $_POST['insertUsuario_ap_m'];    
+            $correo = $_POST['insertUsuario_correo'];
+            $telefono = $_POST['insertUsuario_telefono'];
+            $rol = $_POST['insertUsuario_rol'];
+            $pass = $_POST['insertUsuario_pass'];
+            $idUser = $_POST['id_user'];
+    
+            $consulta->insertUsuario($user, $name, $apellido_p, $apellido_m, $correo, $telefono, $rol, $pass); // insertamos el usuario en la base de datos
+            $consulta->setHistorialUsuario('Creo un nuevo usuario '. $user , $idUser, date('d/m/Y, h:i:s')); // insertamos la acción en el historial
+            $error = 0;
+            echo json_encode($error);
+        }else{
+            $error = 1;
+            echo json_encode($error);
+        }
     }
 
     if (isset($_POST['deleteCredencial']) and isset($_POST['user'])){

@@ -1,6 +1,7 @@
 // buttons ---------------------------------------------------------------------------
 const btn_logout_session = document.querySelector('.container-button_logout button');
 const btn_back = document.querySelector('.container-button_back button');
+const btn_settings = document.querySelector('.container-button_confi button');
 
 const buttons_Usuarios = document.querySelectorAll('.Registro_usuario');
 const buttons_Alumnos = document.querySelectorAll('.Registro_alumno');
@@ -10,6 +11,8 @@ const btnSwitch = document.querySelector('#switch');
 const buttons_delete = document.querySelectorAll('.delete')
 
 const btnInsertUsuario = document.querySelector('#submit-form-insertar_usuario');
+
+const btnUpdateUsuarioSession = document.querySelector('#submit-modificar_usuario_session');
 // -----------------------------------------------------------------------------------
 
 // inputs ----------------------------------------------------------------------------
@@ -32,6 +35,8 @@ const input_filtro_credenciales = document.querySelector('#filtro_credencial');
 // Variables -------------------------------------------------------------------------
 const inputs = document.querySelectorAll('form input');
 
+const formUpdateUsuarioSession = document.querySelector('.form-modificar_usuario_sesion');
+
 const expresiones = {
 	usuario: /^[a-zA-Z0-9\_\-]{5,25}$/, // Letras, numeros, guion y guion_bajo
     nombre: /^[a-zA-ZÀ-ÿ\s]{1,25}$/,
@@ -43,13 +48,31 @@ const expresiones = {
     CURP: /^[A-Z]{1}[AEIOU]{1}[A-Z]{2}[0-9]{2}(0[1-9]|1[0-2])(0[1-9]|1[0-9]|2[0-9]|3[0-1])[HM]{1}(AS|BC|BS|CC|CS|CH|CL|CM|DF|DG|GT|GR|HG|JC|MC|MN|MS|NT|NL|OC|PL|QT|QR|SP|SL|SR|TC|TS|TL|VZ|YN|ZS|NE)[B-DF-HJ-NP-TV-Z]{3}[0-9A-Z]{1}[0-9]{1}$/
 }
 
-insertUsuario = {
+const insertUsuario = {
     nombre: false,
     apellido_p: false,
     apellido_m: false,
     correo: false,
     telefono: false,
     pass: false
+}
+
+const updateUsuarioSession = {
+    user: true,
+    nombre: true,
+    apP: true,
+    apM: true,
+    correo: true,
+    telefono: true
+}
+
+const insertAlumno = {
+    nombre: false,
+    apP: false,
+    apM: false,
+    esp: false,
+    gncion: false,
+    nss: false
 }
 
 // -----------------------------------------------------------------------------------
@@ -72,6 +95,7 @@ btnSwitch.addEventListener('click', () => {
 		localStorage.setItem('dark-mode', 'true');
 	}
 });
+
 const updateForm_modificar_usuario = function (e){
     if (rol == 1){
         let id_consultar_usuario = e.target.id;
@@ -101,6 +125,7 @@ const updateForm_modificar_usuario = function (e){
         });
     }
 }
+
 const updateForm_modificar_alumno = function (e){
     let NoControl_consultar_alumno = e.target.id;
     $.ajax({
@@ -147,12 +172,7 @@ const updateForm_modificar_alumno = function (e){
         }
     });
 }
-const logout = function (){
-    window.location = './db/logout';
-}
-const back = function (){
-    window.location = './'  
-}
+
 const filtrar_tabla_user = function () {
     if (rol == 1){
         const filtro = '%' + input_filtro_users.value.replace(/\s+/g, ' ') + '%';
@@ -320,10 +340,75 @@ const validarForm = (e) => {
         break;
         case 'telefono-insertar':
             insertUsuario.telefono = validarCampo(expresiones.telefono, e.target.value, e.target.id);
-            break;
+        break;
+        
         case 'pass-insertar':
             insertUsuario.pass = validarCampo(expresiones.password, e.target.value, e.target.id);
         break;
+
+        case 'user-session':
+            updateUsuarioSession.user = validarCampo(expresiones.usuario, e.target.value, e.target.id);
+            validarCambios();
+        break;
+
+        case 'nombre-session':
+            updateUsuarioSession.nombre = validarCampo(expresiones.nombre, e.target.value, e.target.id);
+            validarCambios();
+        break;
+
+        case 'apP-session':
+            updateUsuarioSession.apP = validarCampo(expresiones.nombre, e.target.value, e.target.id);
+            validarCambios();
+        break;
+
+        case 'apM-session':
+            updateUsuarioSession.apM = validarCampo(expresiones.nombre, e.target.value, e.target.id);
+            validarCambios();
+        break;
+
+        case 'correo-session':
+            updateUsuarioSession.correo = validarCampo(expresiones.correo, e.target.value, e.target.id);
+            validarCambios();
+        break;
+
+        case 'telefono-session':
+            updateUsuarioSession.telefono = validarCampo(expresiones.telefono, e.target.value, e.target.id);
+            validarCambios();
+        break;
+        
+        case 'nombre-insertar_alumno':
+            insertAlumno.nombre = validarCampo(expresiones.nombre, e.target.value, e.target.id);
+        break;
+
+        case 'apP-insertar_alumno':
+            insertAlumno.apP = validarCampo(expresiones.nombre, e.target.value, e.target.id);
+        break;
+
+        case 'apM-insertar_alumno':
+            insertAlumno.apM = validarCampo(expresiones.nombre, e.target.value, e.target.id);
+        break;
+
+    }
+}
+
+const validarCambios = function(){
+    let user = document.querySelector('#user-session'); 
+    let nombre = document.querySelector('#nombre-session');
+    let apP = document.querySelector('#apP-session');
+    let apM = document.querySelector('#apM-session');
+    let correo = document.querySelector('#correo-session');
+    let telefono = document.querySelector('#telefono-session');
+    if (updateUsuarioSession.user && updateUsuarioSession.nombre &&  updateUsuarioSession.apP && updateUsuarioSession.apM && updateUsuarioSession.correo && updateUsuarioSession.telefono){
+        if (datosUsuarioSession.user != user.value || datosUsuarioSession.nombre != nombre.value || datosUsuarioSession.apP != apP.value || datosUsuarioSession.apM != apM.value || datosUsuarioSession.correo != correo.value || datosUsuarioSession.telefono != telefono.value){
+            document.querySelector('#submit-modificar_usuario_session').removeAttribute('disabled');
+            return true;
+        }else{
+            document.querySelector('#submit-modificar_usuario_session').setAttribute('disabled',true);
+            return false;
+        }
+    }else{
+        document.querySelector('#submit-modificar_usuario_session').setAttribute('disabled', true);
+        return false;
     }
 }
 
@@ -371,27 +456,38 @@ const submitInsertUsuario = function(){
                 insertUsuario_telefono: telefono.value,
                 insertUsuario_rol: rol.value,
                 insertUsuario_pass: pass.value,
-                consulta_filtro_user: `SELECT ID, user, nombre, ap_paterno, ap_materno, telefono, mail, nombreRol, estado FROM usuarios, roles WHERE (usuarios.rol = roles.NoRol AND usuarios.ID <> ${user_session_id}) AND usuarios.nombre LIKE '%%';`
+                consulta_filtro_user: `SELECT ID, user, nombre, ap_paterno, ap_materno, telefono, mail, nombreRol, estado FROM usuarios, roles WHERE (usuarios.rol = roles.NoRol AND usuarios.ID <> ${user_session_id}) AND usuarios.nombre LIKE '%%';`,
+                id_user: user_session_id
             },
             success: function(respuesta){
-                let request = JSON.parse(respuesta);
-                $('#container_registros_user').html(request);
-                $('#user-insertar').val('');
-                $('#nombre-insertar').val('');
-                $('#apP-insertar').val('');
-                $('#apM-insertar').val('');
-                $('#correo-insertar').val('');
-                $('#telefono-insertar').val('');
-                $('#pass-insertar').val('');
-                
-                $('#user-insertar').removeClass('is-valid');
-                $('#nombre-insertar').removeClass('is-valid');
-                $('#apP-insertar').removeClass('is-valid');
-                $('#apM-insertar').removeClass('is-valid');
-                $('#correo-insertar').removeClass('is-valid');
-                $('#telefono-insertar').removeClass('is-valid');
-                $('#pass-insertar').removeClass('is-valid');
-                document.querySelector('#close-modal-form_insertar_usuario').click();
+                if (respuesta.charAt(0) != 1){
+                    respuesta = respuesta.substring(1);
+                    let request = JSON.parse(respuesta);
+                    $('#container_registros_user').html(request);
+                    $('#user-insertar').val('');
+                    $('#nombre-insertar').val('');
+                    $('#apP-insertar').val('');
+                    $('#apM-insertar').val('');
+                    $('#correo-insertar').val('');
+                    $('#telefono-insertar').val('');
+                    $('#pass-insertar').val('');
+                    
+                    $('#user-insertar').removeClass('is-valid');
+                    $('#nombre-insertar').removeClass('is-valid');
+                    $('#apP-insertar').removeClass('is-valid');
+                    $('#apM-insertar').removeClass('is-valid');
+                    $('#correo-insertar').removeClass('is-valid');
+                    $('#telefono-insertar').removeClass('is-valid');
+                    $('#pass-insertar').removeClass('is-valid');
+                    document.querySelector('#close-modal-form_insertar_usuario').click();
+                }else{
+                    $('#user-insertar').removeClass('is-valid');
+                    $('#user-insertar').addClass('is-invalid');
+                    $('#user-insertar + div').html('Este nombre de usuario no esta disponible');
+                    setTimeout(() => {
+                        $('#user-insertar + div').html('Ingrese un nombre valido.');
+                    }, 2000);
+                }
             }
         });
     }
@@ -399,8 +495,13 @@ const submitInsertUsuario = function(){
 // -----------------------------------------------------------------------------------
 
 // escuchadores ----------------------------------------------------------------------
-btn_logout_session.addEventListener('click', logout);
-btn_back.addEventListener('click', back);
+btnUpdateUsuarioSession.addEventListener('click', ()=>{
+    if (validarCambios()){
+        formUpdateUsuarioSession.submit();
+    }
+});
+btn_logout_session.addEventListener('click', () => {window.location = './db/logout'});
+btn_back.addEventListener('click', () => {window.location = './'});
 btnInsertUsuario.addEventListener('click', submitInsertUsuario);
 buttons_Usuarios.forEach((elemnt) => {
     elemnt.addEventListener('click', updateForm_modificar_usuario);
