@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 21-11-2022 a las 07:25:25
+-- Tiempo de generación: 29-11-2022 a las 22:30:31
 -- Versión del servidor: 10.4.24-MariaDB
 -- Versión de PHP: 8.1.6
 
@@ -20,8 +20,6 @@ SET time_zone = "+00:00";
 --
 -- Base de datos: `credenciales`
 --
-CREATE DATABASE IF NOT EXISTS `credenciales` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
-USE `credenciales`;
 
 -- --------------------------------------------------------
 
@@ -47,15 +45,14 @@ CREATE TABLE `alumnos` (
 
 INSERT INTO `alumnos` (`NoControl`, `nombre`, `ap_paterno`, `ap_materno`, `especialidad`, `curp`, `generacion`, `NSS`, `estado`) VALUES
 (20840030548756, 'María', 'Valencia', 'Velásquez', 6, 'AACM651123MTSLLR06', '2020 - 2023', 6920052304, 0),
-(20840043548756, 'Juan', 'Sandoval', 'Silva', 1, 'OOAZ900824MTSRLL08', '2020 - 2023', 4920442304, 1),
+(20840043546834, 'Juan', 'Sandoval', 'Silva', 1, 'OOAZ900824MTSRLL08', '2020 - 2023', 4920442304, 1),
 (20840057548756, 'Alejandra', 'Martínez', 'Padilla', 4, 'SAPM880429MTSNRR00', '2020 - 2023', 5950052304, 1),
-(20840058548756, 'Alejandro', 'Fernandez', 'Larios', 2, 'GORM680121MTSNDG06', '2020 - 2023', 6220755304, 1),
-(20840091548756, 'Manuel', 'Garcia', 'Arechiga', 3, 'ROBG900321MTSDRD01', '2020 - 2023', 6810082304, 0),
+(20840058548756, 'Alejandro', 'Fernando', 'Larios', 2, 'GORM680121MTSNDG06', '2020 - 2023', 6220755304, 1),
+(20840091548756, 'Manuel', 'Garcia', 'Arechiga', 2, 'ROBG900321MTSDRD01', '2020 - 2023', 6810082304, 1),
 (20840131548756, 'Eduardo', 'Llamas', 'Diego', 1, 'OIRY910429MTSRDL02', '2020 - 2023', 6924082304, 1),
 (20840132548756, 'Johana', 'Pedraza', 'Ramos', 5, 'EIRJ720502HTSSDN06', '2020 - 2023', 4920052304, 1),
-(20840148548756, 'Rubí', 'Beltran', 'Larios', 1, 'RIVS770301HTSVZL05', '2020 - 2023', 6920058304, 1),
-(20840187548756, 'Mayte', 'Arias', 'Téllez', 4, 'SORE610611MTSLMM04', '2020 - 2023', 7924055304, 0),
-(20840208548756, 'Saúl', 'Gómez', 'Baeza', 1, 'TITD600101HTSNRN09', '2020 - 2023', 4928752304, 0),
+(20840148548756, 'Rubí', 'Beltran', 'Larios', 2, 'RIVS770301HTSVZL05', '2020 - 2023', 6920058304, 1),
+(20840208548756, 'Saúl', 'Gómez', 'Baeza', 1, 'TITD600101HTSNRN09', '2020 - 2023', 4928752304, 1),
 (20840221548756, 'Esmeralda', 'Pérez', 'Salazar', 6, 'MOCG481211MTSRSD25', '2020 - 2023', 8925057304, 1),
 (20840223548756, 'Iván', 'Real', 'Sánchez', 4, 'MERG690406HTSDDD03', '2020 - 2023', 7920054304, 1),
 (20840236548756, 'Aldo', 'López', 'Lucrecio', 5, 'CALF631005HTSSDR02', '2020 - 2023', 7928058304, 1),
@@ -63,7 +60,6 @@ INSERT INTO `alumnos` (`NoControl`, `nombre`, `ap_paterno`, `ap_materno`, `espec
 (20840240548756, 'Adriana', 'Cuevas', 'Alcalá', 1, 'SECM620929HTSGPG06', '2020 - 2023', 2924052504, 0),
 (20840250548756, 'Joseline', 'Juarez', 'Díaz', 2, 'AALT601015HTSLPR00', '2020 - 2023', 1920042304, 1),
 (20840252548756, 'Abraham', 'López', 'Gutiérrez', 4, 'GORE781222HTSNBF01 ', '2020 - 2023', 7922062304, 1),
-(20840255548756, 'Veronica', 'Franco', 'Arana', 6, 'MAMG940610HTSRRL03', '2020 - 2023', 8921042304, 0),
 (20840273548756, 'Alejandro', 'Ibarra', 'Casttilo', 3, 'TORA780313MTSRDD04', '2020 - 2023', 6922072304, 1),
 (20840317548756, 'Adrián', 'López', 'López', 2, 'TIPC490202HTSNZN07', '2020 - 2023', 2925072304, 1);
 
@@ -75,18 +71,10 @@ INSERT INTO `alumnos` (`NoControl`, `nombre`, `ap_paterno`, `ap_materno`, `espec
 
 CREATE TABLE `consultaspublic` (
   `NoRegistro` int(11) NOT NULL,
-  `accion` varchar(100) NOT NULL,
+  `accion` varchar(150) NOT NULL,
   `usuario` double NOT NULL,
   `fecha` varchar(25) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- Volcado de datos para la tabla `consultaspublic`
---
-
-INSERT INTO `consultaspublic` (`NoRegistro`, `accion`, `usuario`, `fecha`) VALUES
-(1, 'Consultar credencial', 20840221548756, '07/06/2022'),
-(2, 'Generar Credencial', 20840237548756, '24/08/2022');
 
 -- --------------------------------------------------------
 
@@ -131,7 +119,7 @@ INSERT INTO `especialidades` (`NoEspecialidad`, `nombreEspecialidad`) VALUES
 
 CREATE TABLE `movimientosuser` (
   `NoRegistro` int(11) NOT NULL,
-  `movimiento` varchar(100) NOT NULL,
+  `movimiento` varchar(150) NOT NULL,
   `usuario` int(11) NOT NULL,
   `fecha` varchar(25) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -141,8 +129,9 @@ CREATE TABLE `movimientosuser` (
 --
 
 INSERT INTO `movimientosuser` (`NoRegistro`, `movimiento`, `usuario`, `fecha`) VALUES
-(1, 'inserto un usuario', 2, '18/11/2022'),
-(2, 'Intento Iniciar sección', 4, '19/11/2022');
+(83, 'Inicio sessión', 2, '29/11/2022, 02:43:52'),
+(84, 'Creo un nuevo usuario GCHINAC', 2, '29/11/2022, 03:17:30'),
+(89, 'Modifico la informacion del usuario con id: 17', 2, '29/11/2022, 03:29:15');
 
 -- --------------------------------------------------------
 
@@ -187,9 +176,8 @@ CREATE TABLE `usuarios` (
 --
 
 INSERT INTO `usuarios` (`ID`, `user`, `nombre`, `ap_paterno`, `ap_materno`, `telefono`, `mail`, `password`, `rol`, `estado`) VALUES
-(2, 'Eduarduar', 'Eduardo', 'Arcega', 'Rodriguez', 1234567890, 'prueva@prueva.com', '$2y$10$opjdopGxo2xbtw/X9FfGmOhky7ECNw/PEHzvvMUUiB9sslXoD1TGu', 1, 1),
-(3, 'Saul1', 'Saul Elizandro', 'Madrigal', 'Ortega', 1234567890, 'prueva@prueva.com', '$2y$10$opjdopGxo2xbtw/X9FfGmOhky7ECNw/PEHzvvMUUiB9sslXoD1TGu', 2, 1),
-(4, 'Marco', 'Marco Dair', 'Martin', 'Rojo', 1234567890, 'prueva@prueva.com', '$2y$10$opjdopGxo2xbtw/X9FfGmOhky7ECNw/PEHzvvMUUiB9sslXoD1TGu', 1, 0);
+(2, 'Eduarduar', 'Eduardo', 'Arcega', 'Rodriguez', 1234567890, 'prueva@prueva.com', '$2y$10$mu1.0VKA5KEpimY7NhNz1.FFVxk/wV6mVhO5Zjp6qiWx0ZGdSPhP2', 1, 1),
+(17, 'GCHINAC', 'Gabriel Ignacio', 'China', 'Cortéz', 1234567890, 'MtroChina@gmail.com', '$2y$10$Glo.pZhr2woeJaNtWDTune9aaOZGFNLSvLIQitqRaGpHJx0DJUpSm', 1, 1);
 
 --
 -- Índices para tablas volcadas
@@ -250,7 +238,7 @@ ALTER TABLE `usuarios`
 -- AUTO_INCREMENT de la tabla `consultaspublic`
 --
 ALTER TABLE `consultaspublic`
-  MODIFY `NoRegistro` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `NoRegistro` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT de la tabla `especialidades`
@@ -262,7 +250,7 @@ ALTER TABLE `especialidades`
 -- AUTO_INCREMENT de la tabla `movimientosuser`
 --
 ALTER TABLE `movimientosuser`
-  MODIFY `NoRegistro` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `NoRegistro` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=90;
 
 --
 -- AUTO_INCREMENT de la tabla `roles`
@@ -274,7 +262,7 @@ ALTER TABLE `roles`
 -- AUTO_INCREMENT de la tabla `usuarios`
 --
 ALTER TABLE `usuarios`
-  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- Restricciones para tablas volcadas

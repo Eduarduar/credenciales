@@ -53,8 +53,23 @@
             return false;
         }
 
+        public function confirmarUserByIdPass($id, $pass){
+            $pass = md5($pass);
+            $query = $this->connect()->prepare("SELECT password FROM usuarios WHERE ID = $id");
+            $query->execute();
+            if ($query->rowCount()){
+                foreach($query as $registro){
+                    $password = $registro['password'];
+                }
+                if (password_verify($pass, $password)){
+                    return true;
+                }
+            }
+            return false;
+        }
+
         public function getUserInfo($id){
-            $query = $this->connect()->prepare("SELECT ID, user, nombre, ap_paterno, ap_materno, telefono, mail, nombreRol, estado FROM usuarios, roles WHERE usuarios.ID = $id AND usuarios.rol = roles.NoRol;");
+            $query = $this->connect()->prepare("SELECT ID, user, nombre, ap_paterno, ap_materno, telefono, mail, rol,nombreRol, estado FROM usuarios, roles WHERE usuarios.ID = $id AND usuarios.rol = roles.NoRol;");
             $query->execute();
             foreach($query as $registro){
                 $datos = [
@@ -66,12 +81,13 @@
                     'telefono'      => $registro['telefono'],
                     'mail'          => $registro['mail'],
                     'rol'           => $registro['nombreRol'],
+                    'ROL'           => $registro['rol'],
                     'estado'        => $registro['estado']
                 ];
             }
             return $datos;
         }
-        
+
         public function getAlumnoInfo($NoControl){
             $query = $this->connect()->prepare("SELECT NoControl, nombre, ap_paterno, ap_materno, NoEspecialidad, nombreEspecialidad, curp, generacion, NSS, estado FROM alumnos, especialidades WHERE alumnos.NoControl = $NoControl AND alumnos.especialidad = especialidades.NoEspecialidad;");
             $query->execute();
@@ -246,6 +262,16 @@
             $this->connect()->query("DELETE FROM alumnos WHERE NoControl = $NoControl");
         }
 
+        public function updateUser($id, $user, $nombre, $apP, $apM, $correo, $telefono, $rol, $estado){
+            $this->connect()->query("UPDATE usuarios SET user = '$user', nombre = '$nombre', ap_paterno = '$apP', ap_materno = '$apM', telefono = $telefono, mail = '$correo', rol = $rol, estado = $estado WHERE ID = $id;");
+        }
+
+        public function updatePassword($id, $pass){
+            $md5 = md5($pass);
+            $pass = password_hash($md5, PASSWORD_DEFAULT, ['cost' => 10]);
+            $this->connect()->query("UPDATE usuarios SET password = '$pass' WHERE ID = $id;");
+        }
+
     }
 
     $consulta = new consultas();
@@ -256,6 +282,35 @@
 
     if (isset($_POST['insertAlumno_nombre']) && isset($_POST['insertAlumno_ap_p']) && isset($_POST['insertAlumno_aP_m']) && isset($_POST['insertAlumno_esp']) && isset($_POST['insertAlumno_gen']) && isset($_POST['insertAlumno_nss']) && isset($_POST['insertAlumno_NoControl']) && isset($_POST['insertAlumno_curp'])){
         $consulta->setAlumno($_POST['insertAlumno_NoControl'], $_POST['insertAlumno_nombre'], $_POST['insertAlumno_ap_p'], $_POST['insertAlumno_aP_m'], $_POST['insertAlumno_curp'], $_POST['insertAlumno_esp'], $_POST['insertAlumno_gen'], $_POST['insertAlumno_nss']);
+    }
+
+    if (isset($_POST['user_session_id']) && isset($_POST['passA']) && isset($_POST['passC'])){
+        if ($consulta->confirmarUserByIdPass($_POST['user_session_id'], $_POST['passA'])){
+            $consulta->updatePassword($_POST['user_session_id'], $_POST['passC']);
+            echo json_encode(0);
+        }else{
+            echo json_encode(1);
+        }
+    }
+
+    if (isset($_POST['updateUser_id']) && isset($_POST['updateUser_user']) && isset($_POST['updateUser_nombre']) && isset($_POST['updateUser_apP']) && isset($_POST['updateUser_apM']) && isset($_POST['updateUser_correo']) && isset($_POST['updateUser_telefono']) && isset($_POST['updateUser_rol']) && isset($_POST['updateUser_estado']) && isset($_POST['idUser'])){
+        $id         = $_POST['updateUser_id'];
+        $user       = $_POST['updateUser_user'];
+        $nombre     = $_POST['updateUser_nombre'];
+        $apP        = $_POST['updateUser_apP'];
+        $apM        = $_POST['updateUser_apM'];
+        $correo     = $_POST['updateUser_correo'];
+        $telefono   = $_POST['updateUser_telefono'];
+        $rol        = $_POST['updateUser_rol'];
+        $estado     = $_POST['updateUser_estado'];
+        $idUser     = $_POST['idUser'];
+        if ($consulta->confirmarUserById($id)){
+            $consulta->updateUser($id, $user, $nombre, $apP, $apM, $correo, $telefono, $rol, $estado);
+            $consulta->setHistorialUsuario('Modifico la informacion del usuario con id: ' . $id, $idUser, date('d/m/Y, h:i:s'));
+            echo json_encode(0);
+        }else{
+            echo json_encode(1);
+        }
     }
 
     if (isset($_POST['updateAlumno_NoControl']) && isset($_POST['updateAlumno_nombre']) && isset($_POST['updateAlumno_apP']) && isset($_POST['updateAlumno_apM']) && isset($_POST['updateAlumno_esp']) && isset($_POST['updateAlumno_curp']) && isset($_POST['updateAlumno_generacion']) && isset($_POST['updateAlumno_nss']) && isset($_POST['updateAlumno_estado']) && isset($_POST['updateAlumno_NoControl_old']) && isset($_POST['user_session_id'])){

@@ -632,8 +632,8 @@
                         </form>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#form-modificar_usuario_sesion-modal">Atras</button>
-                        <button type="button" id="submitLogin" class="btn btn-primary" disabled>Confirmar</button>
+                        <button type="button" id="close-form_changePasword" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#form-modificar_usuario_sesion-modal">Atras</button>
+                        <button type="button" id="submit-form_changePasword" class="btn btn-primary">Confirmar</button>
                     </div>
                 </div>
             </div>
@@ -881,7 +881,7 @@
                             <div class="input-group mb-3">
                                 <label class="input-group-text" for="options-estado-modificar">Estado</label>
                                 <select class="form-select" id="options-estado-modificar">
-                                    <option value="1">activo</option>
+                                    <option value="1">activo  </option>
                                     <option value="0">inactivo</option>
                                 </select>
                             </div>
@@ -889,7 +889,7 @@
                         </form>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                        <button type="button" id="close-form-modificar_usuario" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
                         <button type="button" id="submit-form-modificar_usuario" class="btn btn-primary" disabled>Confirmar</button>
                     </div>
                 </div>

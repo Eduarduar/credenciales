@@ -15,6 +15,8 @@ const btnInsertUsuario = document.querySelector('#submit-form-insertar_usuario')
 const btnUpdateUsuarioSession = document.querySelector('#submit-modificar_usuario_session');
 const btnInsertAlumno = document.querySelector('#submit-form-insertar_alumno');
 const btnUpdateAlumno = document.querySelector('#submit-form-modificar_alumno');
+const btnUpdateUser = document.querySelector('#submit-form-modificar_usuario');
+const btnChangePassword = document.querySelector('#submit-form_changePasword');
 // -----------------------------------------------------------------------------------
 
 // inputs ----------------------------------------------------------------------------
@@ -34,12 +36,15 @@ const input_select_filtro_credenciales = document.querySelector('#options-filtro
 const input_filtro_credenciales = document.querySelector('#filtro_credencial');
 
 const input_select_esp_modificar_alumno = document.querySelector('#options-ESP-modificar_alumno');
-const input_select_estado_modeficar_alumno = document.querySelector('#options-estado-modificar_alumno');
+const input_select_estado_modificar_alumno = document.querySelector('#options-estado-modificar_alumno');
+
+const input_select_rol_modificar_user = document.querySelector('#options-rol-modificar');
+const input_select_estado_modificar_user = document.querySelector('#options-estado-modificar');
 // -----------------------------------------------------------------------------------
 
 // Variables -------------------------------------------------------------------------
-
-const datosUpdateAlumno = {
+// clases para guardar temporalmente los datos antes de ser modificados
+const datosUpdateAlumno = { 
     NoControl: '',
     nombre: '',
     apP: '',
@@ -51,10 +56,24 @@ const datosUpdateAlumno = {
     estado: ''
 }
 
+const datosUpdateUser = {
+    id: '',
+    user: '',
+    nombre: '',
+    apP: '',
+    apM: '',
+    correo: '',
+    telefono: '',
+    rol: '',
+    estado: ''
+}
+
+// obtenemos los todos los inputs en la pagina para validarlos
 const inputs = document.querySelectorAll('form input');
 
 const formUpdateUsuarioSession = document.querySelector('.form-modificar_usuario_sesion');
 const formUpdateAlumno = document.querySelector('.form-modificar_alumno');
+const formUpdateUser = document.querySelector('#form-modificar_usuario');
 
 const expresiones = {
 	usuario: /^[a-zA-Z0-9\_\-]{5,25}$/, // Letras, numeros, guion y guion_bajo
@@ -110,6 +129,23 @@ const updateAlumno = { // formulario modificar datos de alumno
     estado: false
 }
 
+const updateUser = { // formulario modificar datos usuario
+    user: false,
+    nombre: false,
+    apP: false,
+    apM: false,
+    correo: false,
+    telefono: false,
+    rol: false,
+    estado: false
+}
+
+const changePassword = {
+    passA: false,
+    passN: false,
+    passC: false
+}
+
 // -----------------------------------------------------------------------------------
 
 
@@ -140,20 +176,49 @@ const updateForm_modificar_usuario = function (e){
             data: {id_consultar_usuario: id_consultar_usuario},
             success: function (respuesta) {
                 let request = JSON.parse(respuesta);
+                // reiniciamos los selects
                 $("#options-rol-modificar option[value=1]").attr("selected",false);
                 $("#options-rol-modificar option[value=2]").attr("selected",false);
                 $("#options-estado-modificar option[value=1]").attr("selected",false);
                 $("#options-estado-modificar option[value=0]").attr("selected",false);
+                // validamos que los valores de los campos
+                updateUser.user     = validarCampo(expresiones.usuario  , request.user      , $('#user-modificar').attr('id')       );
+                updateUser.nombre   = validarCampo(expresiones.nombre   , request.nombre    , $('#nombre-modificar').attr('id')     );
+                updateUser.apP      = validarCampo(expresiones.nombre   , request.ap_paterno, $('#apP-modificar').attr('id')        );
+                updateUser.apM      = validarCampo(expresiones.nombre   , request.ap_materno, $('#apM-modificar').attr('id')        );
+                updateUser.correo   = validarCampo(expresiones.correo   , request.mail      , $('#correo-modificar').attr('id')     );
+                updateUser.telefono = validarCampo(expresiones.telefono , request.telefono  , $('#telefono-modificar').attr('id')   );
+                // guardamos los datos para verificar los cambios
+                datosUpdateUser.id      = request.id
+                datosUpdateUser.user    = request.user;
+                datosUpdateUser.nombre  = request.nombre;
+                datosUpdateUser.apP     = request.ap_paterno;
+                datosUpdateUser.apM     = request.ap_materno;
+                datosUpdateUser.correo  = request.mail;
+                datosUpdateUser.telefono= request.telefono;
+                datosUpdateUser.rol     = request.ROL;
+                datosUpdateUser.estado  = request.estado;
+                // insertamos los datos en los campos correspondientes
                 $('#user-modificar').val(request.user);
                 $('#nombre-modificar').val(request.nombre);
                 $('#apP-modificar').val(request.ap_paterno);
                 $('#apM-modificar').val(request.ap_materno);
                 $('#correo-modificar').val(request.mail);
                 $('#telefono-modificar').val(request.telefono);
-                if (request.rol == 'admin'){
-                    $("#options-rol-modificar option[value=1]").attr("selected",true);
+                // seleccionamos la opcion segun el valor que tenemos
+                if (request.rol == 'admin'){  
+                    $("#options-rol-modificar").html('');
+                    $("#options-rol-modificar").html('<option value="1" selected>admin</option><option value="2">moder</option>');
                 }else{
-                    $("#options-rol-modificar option[value=2]").attr("selected",true);
+                    $("#options-rol-modificar").html('');
+                    $("#options-rol-modificar").html('<option value="1">admin</option><option value="2" selected>moder</option>');
+                }
+                if(request.estado == 1){
+                    $('#options-estado-modificar').html('');
+                    $('#options-estado-modificar').html('<option value="1" selected>activo  </option><option value="0">inactivo</option>');
+                }else{
+                    $('#options-estado-modificar').html('');
+                    $('#options-estado-modificar').html('<option value="1">activo  </option><option value="0" selected>inactivo</option>');
                 }
                 $("#options-estado-modificar option[value="+ request.estado +"]").attr("selected",true);
             }
@@ -206,23 +271,36 @@ const updateForm_modificar_alumno = function (e){
             $('#NSS-modificar_alumno').val(         request.NSS         );
             switch (request.ESP){ // seleccionamos la opcion correspondiente de especialidad y estado
                 case 'Arquitectura':
-                    $("#options-ESP-modificar_alumno option[value=1]").attr("selected",true);
+                    $("#options-ESP-modificar_alumno").html('');
+                    $("#options-ESP-modificar_alumno").html('<option id="Arquitectura-modificar_alumno"  value="1" selected>Arquitectura</option><option id="Logistica-modificar_alumno"     value="2">Logistica</option><option id="Ofimatica-modificar_alumno"     value="3">Ofimatica</option><option id="Preparacion-modificar_alumno"   value="4">Preparación de Alimentos y Bebidas</option><option id="Programacion-modificar_alumno"  value="5">Programación</option><option id="Contabilidad-modificar_alumno"  value="6">Contabilidad</option>');
                 break;
                 case 'Logistica':
-                    $("#options-ESP-modificar_alumno option[value=2]").attr("selected",true);
+                    $("#options-ESP-modificar_alumno").html('');
+                    $("#options-ESP-modificar_alumno").html('<option id="Arquitectura-modificar_alumno"  value="1">Arquitectura</option><option id="Logistica-modificar_alumno"     value="2" selected>Logistica</option><option id="Ofimatica-modificar_alumno"     value="3">Ofimatica</option><option id="Preparacion-modificar_alumno"   value="4">Preparación de Alimentos y Bebidas</option><option id="Programacion-modificar_alumno"  value="5">Programación</option><option id="Contabilidad-modificar_alumno"  value="6">Contabilidad</option>');
                 break;
                 case 'Ofimatica':
-                    $("#options-ESP-modificar_alumno option[value=3]").attr("selected",true);
+                    $("#options-ESP-modificar_alumno").html('');
+                    $("#options-ESP-modificar_alumno").html('<option id="Arquitectura-modificar_alumno"  value="1">Arquitectura</option><option id="Logistica-modificar_alumno"     value="2">Logistica</option><option id="Ofimatica-modificar_alumno"     value="3" selected>Ofimatica</option><option id="Preparacion-modificar_alumno"   value="4">Preparación de Alimentos y Bebidas</option><option id="Programacion-modificar_alumno"  value="5">Programación</option><option id="Contabilidad-modificar_alumno"  value="6">Contabilidad</option>');
                 break;
                 case 'Preparación de Alimentos y Bebidas':
-                    $("#options-ESP-modificar_alumno option[value=4]").attr("selected",true);
+                    $("#options-ESP-modificar_alumno").html('');
+                    $("#options-ESP-modificar_alumno").html('<option id="Arquitectura-modificar_alumno"  value="1">Arquitectura</option><option id="Logistica-modificar_alumno"     value="2">Logistica</option><option id="Ofimatica-modificar_alumno"     value="3">Ofimatica</option><option id="Preparacion-modificar_alumno"   value="4" selected>Preparación de Alimentos y Bebidas</option><option id="Programacion-modificar_alumno"  value="5">Programación</option><option id="Contabilidad-modificar_alumno"  value="6">Contabilidad</option>');
                 break;
                 case 'Programación':
-                    $("#options-ESP-modificar_alumno option[value=5]").attr("selected",true);
+                    $("#options-ESP-modificar_alumno").html('');
+                    $("#options-ESP-modificar_alumno").html('<option id="Arquitectura-modificar_alumno"  value="1">Arquitectura</option><option id="Logistica-modificar_alumno"     value="2">Logistica</option><option id="Ofimatica-modificar_alumno"     value="3">Ofimatica</option><option id="Preparacion-modificar_alumno"   value="4">Preparación de Alimentos y Bebidas</option><option id="Programacion-modificar_alumno"  value="5" selected>Programación</option><option id="Contabilidad-modificar_alumno"  value="6">Contabilidad</option>');
                 break;
                 case 'Contabilidad':
-                    $("#options-ESP-modificar_alumno option[value=6]").attr("selected",true);
+                    $("#options-ESP-modificar_alumno").html('');
+                    $("#options-ESP-modificar_alumno").html('<option id="Arquitectura-modificar_alumno"  value="1">Arquitectura</option><option id="Logistica-modificar_alumno"     value="2">Logistica</option><option id="Ofimatica-modificar_alumno"     value="3">Ofimatica</option><option id="Preparacion-modificar_alumno"   value="4">Preparación de Alimentos y Bebidas</option><option id="Programacion-modificar_alumno"  value="5">Programación</option><option id="Contabilidad-modificar_alumno"  value="6" selected>Contabilidad</option>');
                 break;
+            }
+            if (request.estado == 1){
+                $('#options-estado-modificar_alumno').html('');
+                $('#options-estado-modificar_alumno').html('<option value="1" selected>activo</option><option value="0">inactivo</option>');
+            }else{
+                $('#options-estado-modificar_alumno').html('');
+                $('#options-estado-modificar_alumno').html('<option value="1">activo</option><option value="0" selected>inactivo</option>');
             }
             $("#options-estado-modificar_alumno option[value="+ request.estado +"]").attr("selected",true);
         }
@@ -481,6 +559,85 @@ const validarForm = (e) => {
         case 'NSS-modificar_alumno':
             validarCambiosUpdateAlumno();
         break;
+
+        case 'user-modificar':
+            validarCambiosUpdateUser();
+        break;
+
+        case 'nombre-modificar':
+            validarCambiosUpdateUser();
+        break;
+
+        case 'apP-modificar':
+            validarCambiosUpdateUser();
+        break;
+
+        case 'apM-modificar':
+            validarCambiosUpdateUser();
+        break;
+
+        case 'correo-modificar':
+            validarCambiosUpdateUser();
+        break;
+
+        case 'telefono-modificar':
+            validarCambiosUpdateUser();
+        break;
+
+        case 'cambiar-passA':
+            changePassword.passA = validarCampo(expresiones.password, e.target.value, e.target.id);
+        break;
+
+        case 'cambiar-pass2':
+            changePassword.passN = validarCampo(expresiones.password, e.target.value, e.target.id); 
+            changePassword.passC = validarPassword(e.target.id.substring(0, e.target.id.length - 1));
+        break;
+
+        case 'cambiar-pass':
+            changePassword.passC = validarPassword(e.target.id);
+        break;
+    }
+}
+
+const validarCambiosUpdateUser = function(){
+    let user    = $('#user-modificar'           ),
+    nombre      = $('#nombre-modificar'         ),
+    apP         = $('#apP-modificar'            ),
+    apM         = $('#apM-modificar'            ),
+    correo      = $('#correo-modificar'         ),
+    telefono    = $('#telefono-modificar'       ),
+    rol         = $('#options-rol-modificar'    ).val(),
+    estado      = $('#options-estado-modificar' ).val();
+    
+    updateUser.user     = validarCampo(expresiones.usuario  , user.val()    , user.attr('id')       );
+    updateUser.nombre   = validarCampo(expresiones.nombre   , nombre.val()  , nombre.attr('id')     );
+    updateUser.apP      = validarCampo(expresiones.nombre   , apP.val()     , apP.attr('id')        );
+    updateUser.apM      = validarCampo(expresiones.nombre   , apM.val()     , apM.attr('id')        );
+    updateUser.correo   = validarCampo(expresiones.correo   , correo.val()  , correo.attr('id')     );
+    updateUser.telefono = validarCampo(expresiones.telefono , telefono.val(), telefono.attr('id')   );
+
+    if (rol == 1 || rol == 2){
+        updateUser.rol = true;
+    }else{
+        updateUser = false;
+    }
+    if (estado == 0 || estado == 1){
+        updateUser.estado = true;
+    }else{
+        updateUser.estado = false;
+    }
+
+    if (user.val() !=  datosUpdateUser.user || nombre.val() != datosUpdateUser.nombre || apP.val() != datosUpdateUser.apP || apM.val() != datosUpdateUser.apM || correo.val() != datosUpdateUser.correo || telefono.val() != datosUpdateUser.telefono || rol != datosUpdateUser.rol || estado != datosUpdateUser.estado){
+         if (updateUser.user && updateUser.nombre && updateUser.apP && updateUser.apM && updateUser.correo && updateUser.telefono && updateUser.rol && updateUser.estado){
+            document.querySelector('#submit-form-modificar_usuario').removeAttribute('disabled');
+            return true;
+         }else{
+            document.querySelector('#submit-form-modificar_usuario').setAttribute('disabled' , true);
+            return false;
+         }
+    }else{
+        document.querySelector('#submit-form-modificar_usuario').setAttribute('disabled' , true);
+        return false;
     }
 }
 
@@ -558,6 +715,19 @@ const validarCambiosUsuarioSession = function(){
     
 }
 
+const validarPassword = (campo) => {
+    if ((document.getElementById(`${campo}`).value == document.getElementById(`${campo + "2"}`).value) && ((document.getElementById(`${campo}`).value != "") && (document.getElementById(`${campo + "2"}`).value != ""))){
+        document.getElementById(`${campo}`).classList.remove('is-invalid');
+        document.getElementById(`${campo}`).classList.add('is-valid');
+        return true;
+    }else{
+        document.getElementById(`${campo}`).classList.remove('is-valid');
+        document.getElementById(`${campo}`).classList.add('is-invalid');
+        return false;
+        
+    }
+}
+
 const validarCampo = (exprecion, value, campo) => {
     if (exprecion.test(value)){
         document.getElementById(`${campo}`).classList.remove('is-invalid');
@@ -571,77 +741,83 @@ const validarCampo = (exprecion, value, campo) => {
 }
 
 const submitInsertUsuario = function(){
-    let usuario = document.querySelector('#user-insertar');
-    let nombre = document.querySelector('#nombre-insertar');
-    let ap_p = document.querySelector('#apP-insertar');
-    let ap_m = document.querySelector('#apM-insertar');
-    let correo = document.querySelector('#correo-insertar');
-    let telefono = document.querySelector('#telefono-insertar');
-    let rol = document.querySelector('#options-rol-insertar');
-    let pass = document.querySelector('#pass-insertar');
-
-    insertUsuario.user = validarCampo(expresiones.usuario, usuario.value, usuario.id);
-    insertUsuario.nombre = validarCampo(expresiones.nombre, nombre.value, nombre.id);
-    insertUsuario.apellido_p = validarCampo(expresiones.nombre, ap_p.value, ap_p.id);
-    insertUsuario.apellido_m = validarCampo(expresiones.nombre, ap_m.value, ap_m.id);
-    insertUsuario.correo = validarCampo(expresiones.correo, correo.value, correo.id);
-    insertUsuario.telefono = validarCampo(expresiones.telefono, telefono.value, telefono.id);
-    insertUsuario.pass = validarCampo(expresiones.password, pass.value, pass.id);
-
-
-    if (insertUsuario.user == true && insertUsuario.nombre == true && insertUsuario.apellido_p == true && insertUsuario.apellido_m == true && insertUsuario.correo == true && insertUsuario.telefono == true && insertUsuario.pass == true){
-        $.ajax({
-            url:"./db/queries.php",
-            type:"POST",
-            data:{
-                insertUsuario_usuario: usuario.value,
-                insertUsuario_nombre: nombre.value,
-                insertUsuario_ap_p: ap_p.value,
-                insertUsuario_ap_m: ap_m.value,
-                insertUsuario_correo: correo.value,
-                insertUsuario_telefono: telefono.value,
-                insertUsuario_rol: rol.value,
-                insertUsuario_pass: pass.value,
-                consulta_filtro_user: `SELECT ID, user, nombre, ap_paterno, ap_materno, telefono, mail, nombreRol, estado FROM usuarios, roles WHERE (usuarios.rol = roles.NoRol AND usuarios.ID <> ${user_session_id}) AND usuarios.nombre LIKE '%%';`,
-                id_user: user_session_id
-            },
-            success: function(respuesta){
-                if (respuesta.charAt(0) != 1){
-                    respuesta = respuesta.substring(1);
-                    document.querySelectorAll('.Registro_usuario').forEach((elemnt) => {
-                        elemnt.removeEventListener('click', updateForm_modificar_usuario);
-                    });
-                    let request = JSON.parse(respuesta);
-                    $('#container_registros_user').html(request);
-                    document.querySelectorAll('.Registro_usuario').forEach((elemnt) => {
-                        elemnt.addEventListener('click', updateForm_modificar_usuario);
-                    });
-                    $('#user-insertar').val('');
-                    $('#nombre-insertar').val('');
-                    $('#apP-insertar').val('');
-                    $('#apM-insertar').val('');
-                    $('#correo-insertar').val('');
-                    $('#telefono-insertar').val('');
-                    $('#pass-insertar').val('');
-                    
-                    $('#user-insertar').removeClass('is-valid');
-                    $('#nombre-insertar').removeClass('is-valid');
-                    $('#apP-insertar').removeClass('is-valid');
-                    $('#apM-insertar').removeClass('is-valid');
-                    $('#correo-insertar').removeClass('is-valid');
-                    $('#telefono-insertar').removeClass('is-valid');
-                    $('#pass-insertar').removeClass('is-valid');
-                    document.querySelector('#close-modal-form_insertar_usuario').click();
-                }else{
-                    $('#user-insertar').removeClass('is-valid');
-                    $('#user-insertar').addClass('is-invalid');
-                    $('#user-insertar + div').html('Este nombre de usuario no esta disponible');
-                    setTimeout(() => {
-                        $('#user-insertar + div').html('Ingrese un nombre valido.');
-                    }, 2000);
+    if (rol == 1){
+        let usuario = document.querySelector('#user-insertar');
+        let nombre = document.querySelector('#nombre-insertar');
+        let ap_p = document.querySelector('#apP-insertar');
+        let ap_m = document.querySelector('#apM-insertar');
+        let correo = document.querySelector('#correo-insertar');
+        let telefono = document.querySelector('#telefono-insertar');
+        let rol = document.querySelector('#options-rol-insertar');
+        let pass = document.querySelector('#pass-insertar');
+    
+        insertUsuario.user = validarCampo(expresiones.usuario, usuario.value, usuario.id);
+        insertUsuario.nombre = validarCampo(expresiones.nombre, nombre.value, nombre.id);
+        insertUsuario.apellido_p = validarCampo(expresiones.nombre, ap_p.value, ap_p.id);
+        insertUsuario.apellido_m = validarCampo(expresiones.nombre, ap_m.value, ap_m.id);
+        insertUsuario.correo = validarCampo(expresiones.correo, correo.value, correo.id);
+        insertUsuario.telefono = validarCampo(expresiones.telefono, telefono.value, telefono.id);
+        insertUsuario.pass = validarCampo(expresiones.password, pass.value, pass.id);
+    
+    
+        if (insertUsuario.user == true && insertUsuario.nombre == true && insertUsuario.apellido_p == true && insertUsuario.apellido_m == true && insertUsuario.correo == true && insertUsuario.telefono == true && insertUsuario.pass == true){
+            $.ajax({
+                url:"./db/queries.php",
+                type:"POST",
+                data:{
+                    insertUsuario_usuario: usuario.value,
+                    insertUsuario_nombre: nombre.value,
+                    insertUsuario_ap_p: ap_p.value,
+                    insertUsuario_ap_m: ap_m.value,
+                    insertUsuario_correo: correo.value,
+                    insertUsuario_telefono: telefono.value,
+                    insertUsuario_rol: rol.value,
+                    insertUsuario_pass: pass.value,
+                    consulta_filtro_user: `SELECT ID, user, nombre, ap_paterno, ap_materno, telefono, mail, nombreRol, estado FROM usuarios, roles WHERE (usuarios.rol = roles.NoRol AND usuarios.ID <> ${user_session_id}) AND usuarios.nombre LIKE '%%';`,
+                    id_user: user_session_id
+                },
+                success: function(respuesta){
+                    if (respuesta.charAt(0) != 1){
+                        respuesta = respuesta.substring(1);
+                        document.querySelectorAll('.Registro_usuario').forEach((elemnt) => {
+                            elemnt.removeEventListener('click', updateForm_modificar_usuario);
+                        });
+                        let request = JSON.parse(respuesta);
+                        $('#container_registros_user').html(request);
+                        document.querySelectorAll('.Registro_usuario').forEach((elemnt) => {
+                            elemnt.addEventListener('click', updateForm_modificar_usuario);
+                        });
+                        $("#options-rol-insertar option[value=1]").attr("selected",false);
+                        $("#options-rol-insertar option[value=2]").attr("selected",false);
+                        $("#options-estado-insertar option[value=1]").attr("selected",false);
+                        $("#options-estado-insertar option[value=0]").attr("selected",false);
+                        $('#user-insertar').val('');
+                        $('#nombre-insertar').val('');
+                        $('#apP-insertar').val('');
+                        $('#apM-insertar').val('');
+                        $('#correo-insertar').val('');
+                        $('#telefono-insertar').val('');
+                        $('#pass-insertar').val('');
+                        
+                        $('#user-insertar').removeClass('is-valid');
+                        $('#nombre-insertar').removeClass('is-valid');
+                        $('#apP-insertar').removeClass('is-valid');
+                        $('#apM-insertar').removeClass('is-valid');
+                        $('#correo-insertar').removeClass('is-valid');
+                        $('#telefono-insertar').removeClass('is-valid');
+                        $('#pass-insertar').removeClass('is-valid');
+                        document.querySelector('#close-modal-form_insertar_usuario').click();
+                    }else{
+                        $('#user-insertar').removeClass('is-valid');
+                        $('#user-insertar').addClass('is-invalid');
+                        $('#user-insertar + div').html('Este nombre de usuario no esta disponible');
+                        setTimeout(() => {
+                            $('#user-insertar + div').html('Ingrese un nombre valido.');
+                        }, 2000);
+                    }
                 }
-            }
-        });
+            });
+        }
     }
 }
 
@@ -690,7 +866,13 @@ const submitFormInsertAlumno = function(){
                 document.querySelectorAll('.Registro_alumno').forEach((elemnt) => {
                     elemnt.addEventListener('click', updateForm_modificar_alumno);
                 });
-
+                
+                $("#options-ESP-insertar_alumno option[value=1]").attr(    "selected",false);
+                $("#options-ESP-insertar_alumno option[value=2]").attr(    "selected",false);
+                $("#options-ESP-insertar_alumno option[value=3]").attr(    "selected",false);
+                $("#options-ESP-insertar_alumno option[value=4]").attr(    "selected",false);
+                $("#options-ESP-insertar_alumno option[value=5]").attr(    "selected",false);
+                $("#options-ESP-insertar_alumno option[value=6]").attr(    "selected",false);
                 $('#nombre-insertar_alumno').val('');
                 $('#apP-insertar_alumno').val('');
                 $('#apM-insertar_alumno').val('');
@@ -717,7 +899,7 @@ const submitFormInsertAlumno = function(){
 }
 
 const submitUpdateAlumno = function (){
-    if (validarCambiosUpdateAlumno){
+    if (validarCambiosUpdateAlumno()){
         let NoControl   = document.querySelector('#NoControl-modificar_alumno'),
         nombre          = document.querySelector('#nombre-modificar_alumno'),
         apP             = document.querySelector('#apP-modificar_alumno'),
@@ -823,7 +1005,6 @@ const submitUpdateAlumno = function (){
                 $('#NSS-modificar_alumno').val('');
                 $('#NoControl-modificar_alumno').val('');
                 $('#curp-modificar_alumno').val('');
-
                 
                 $('#nombre-modificar_alumno').removeClass('is-valid');
                 $('#apP-modificar_alumno').removeClass('is-valid');
@@ -838,6 +1019,142 @@ const submitUpdateAlumno = function (){
         });
     }
 }
+
+const submitUpdateUser = function (){
+    if (rol == 1){
+        if (validarCambiosUpdateUser()){
+            let user    = $('#user-modificar'           ),
+            nombre      = $('#nombre-modificar'         ),
+            apP         = $('#apP-modificar'            ),
+            apM         = $('#apM-modificar'            ),
+            correo      = $('#correo-modificar'         ),
+            telefono    = $('#telefono-modificar'       ),
+            rol         = $('#options-rol-modificar'    ).val(),
+            estado      = $('#options-estado-modificar' ).val();
+            $.ajax({
+                url: './db/queries.php',
+                type: 'POST',
+                data: {
+                    updateUser_user: user.val(),
+                    updateUser_nombre: nombre.val(),
+                    updateUser_apP: apP.val(),
+                    updateUser_apM: apM.val(),
+                    updateUser_correo: correo.val(),
+                    updateUser_telefono: telefono.val(),
+                    updateUser_rol: rol,
+                    updateUser_estado: estado,
+                    updateUser_id: datosUpdateUser.id,
+                    idUser: user_session_id,
+                    consulta_filtro_user: `SELECT ID, user, nombre, ap_paterno, ap_materno, telefono, mail, nombreRol, estado FROM usuarios, roles WHERE (usuarios.rol = roles.NoRol AND usuarios.ID <> ${user_session_id}) AND usuarios.nombre LIKE '%%';`
+                },
+                success: function(respuesta){
+                    if (respuesta.charAt(0) != 1){
+                        respuesta = respuesta.substring(1);
+                        document.querySelectorAll('.Registro_usuario').forEach((elemnt) => {
+                            elemnt.removeEventListener('click', updateForm_modificar_usuario);
+                        });
+                        let request = JSON.parse(respuesta);
+                        $('#container_registros_user').html(request);
+                        document.querySelectorAll('.Registro_usuario').forEach((elemnt) => {
+                            elemnt.addEventListener('click', updateForm_modificar_usuario);
+                        });
+    
+                        $("#options-rol-modificar option[value=1]").attr("selected",false);
+                        $("#options-rol-modificar option[value=2]").attr("selected",false);
+                        $("#options-estado-modificar option[value=1]").attr("selected",false);
+                        $("#options-estado-modificar option[value=0]").attr("selected",false);
+                        $('#user-modificar'     ).val('');
+                        $('#nombre-modificar'   ).val('');
+                        $('#apP-modificar'      ).val('');
+                        $('#apM-modificar'      ).val('');
+                        $('#correo-modificar'   ).val('');
+                        $('#telefono-modificar' ).val('');
+                        $('#user-modificar'     ).removeClass('is-valid');
+                        $('#nombre-modificar'   ).removeClass('is-valid');
+                        $('#apP-modificar'      ).removeClass('is-valid');
+                        $('#apM-modificar'      ).removeClass('is-valid');
+                        $('#correo-modificar'   ).removeClass('is-valid');
+                        $('#telefono-modificar' ).removeClass('is-valid');
+                        document.querySelector('#close-form-modificar_usuario').click();
+    
+                    }else{
+                        respuesta = respuesta.substring(1);
+                        document.querySelectorAll('.Registro_usuario').forEach((elemnt) => {
+                            elemnt.removeEventListener('click', updateForm_modificar_usuario);
+                        });
+                        let request = JSON.parse(respuesta);
+                        $('#container_registros_user').html(request);
+                        document.querySelectorAll('.Registro_usuario').forEach((elemnt) => {
+                            elemnt.addEventListener('click', updateForm_modificar_usuario);
+                        });
+                        $("#options-rol-modificar option[value=1]").attr("selected",false);
+                        $("#options-rol-modificar option[value=2]").attr("selected",false);
+                        $("#options-estado-modificar option[value=1]").attr("selected",false);
+                        $("#options-estado-modificar option[value=0]").attr("selected",false);
+                        $("#options-estado-modificar").val('');
+                        $('#user-modificar'     ).val('');
+                        $('#nombre-modificar'   ).val('');
+                        $('#apP-modificar'      ).val('');
+                        $('#apM-modificar'      ).val('');
+                        $('#correo-modificar'   ).val('');
+                        $('#telefono-modificar' ).val('');
+                        $('#user-modificar'     ).removeClass('is-valid');
+                        $('#nombre-modificar'   ).removeClass('is-valid');
+                        $('#apP-modificar'      ).removeClass('is-valid');
+                        $('#apM-modificar'      ).removeClass('is-valid');
+                        $('#correo-modificar'   ).removeClass('is-valid');
+                        $('#telefono-modificar' ).removeClass('is-valid');
+                        document.querySelector('#close-form-modificar_usuario').click();
+                        alert('El usuario que intentas modificar no existe.');
+                    }
+                }
+            });
+        }
+    }
+}
+
+const submitChangePassword = function(){
+    let passA   = $('#cambiar-passA'),
+    passN       = $('#cambiar-pass2'),
+    passC       = $('#cambiar-pass');
+    changePassword.passA = validarCampo(expresiones.password, passA.val(), passA.attr('id'));
+    changePassword.passN = validarCampo(expresiones.password, passN.val(), passN.attr('id'));
+    changePassword.passC = validarPassword(passC.attr('id'));
+    if (changePassword.passA && changePassword.passN && changePassword.passC){
+        $.ajax({
+            url: './db/queries.php',
+            type: 'POST',
+            data: {
+                user_session_id: user_session_id,
+                passA: passA.val(),
+                passC: passC.val()
+            },
+            success: function(respuesta){
+                console.log(respuesta);
+                if (respuesta.charAt(0) != 0){
+                    $('#cambiar-passA').val('');
+                    $('#cambiar-passA').removeClass('is-valid');
+                    $('#cambiar-passA').addClass('is-invalid');
+                    $('#cambiar-passA + div').html('La contraseña no es correcta.');
+                    setTimeout(() => {
+                        $('#cambiar-passA + div').html('contraseña invalida.');
+                    }, 2000);
+                }else{
+                    $('#cambiar-passA').val('');
+                    $('#cambiar-pass2').val('');
+                    $('#cambiar-pass').val('');
+                    $('#cambiar-passA').removeClass('is-valid');
+                    $('#cambiar-pass2').removeClass('is-valid');
+                    $('#cambiar-pass').removeClass('is-valid');
+                    document.querySelector('#close-form_changePasword').click();
+                    setTimeout(() => {
+                        alert('Se a cambiado su contraseña exitosamente.');
+                    }, 500);
+                }
+            }
+        });
+    }
+} 
 // -----------------------------------------------------------------------------------
 
 // escuchadores ----------------------------------------------------------------------
@@ -846,8 +1163,10 @@ btnUpdateUsuarioSession.addEventListener('click', ()=>{
         formUpdateUsuarioSession.submit();
     }
 });
+btnChangePassword.addEventListener('click', submitChangePassword);
 btnInsertAlumno.addEventListener('click', submitFormInsertAlumno);
 btnUpdateAlumno.addEventListener('click', submitUpdateAlumno);
+btnUpdateUser.addEventListener('click', submitUpdateUser);
 btn_logout_session.addEventListener('click', () => {window.location = './db/logout'});
 btn_back.addEventListener('click', () => {window.location = './'});
 btnInsertUsuario.addEventListener('click', submitInsertUsuario);
@@ -900,9 +1219,17 @@ input_select_esp_modificar_alumno.addEventListener(  'focus',    validarCambiosU
 input_select_esp_modificar_alumno.addEventListener(  'click',    validarCambiosUpdateAlumno);
 input_select_esp_modificar_alumno.addEventListener(  'blur',     validarCambiosUpdateAlumno);
 
-input_select_estado_modeficar_alumno.addEventListener(  'focus',    validarCambiosUpdateAlumno);
-input_select_estado_modeficar_alumno.addEventListener(  'click',    validarCambiosUpdateAlumno);
-input_select_estado_modeficar_alumno.addEventListener(  'blur',     validarCambiosUpdateAlumno);
+input_select_estado_modificar_alumno.addEventListener(  'focus',    validarCambiosUpdateAlumno);
+input_select_estado_modificar_alumno.addEventListener(  'click',    validarCambiosUpdateAlumno);
+input_select_estado_modificar_alumno.addEventListener(  'blur',     validarCambiosUpdateAlumno);
+
+input_select_rol_modificar_user.addEventListener(  'focus',    validarCambiosUpdateUser);
+input_select_rol_modificar_user.addEventListener(  'click',    validarCambiosUpdateUser);
+input_select_rol_modificar_user.addEventListener(  'blur',     validarCambiosUpdateUser);
+
+input_select_estado_modificar_user.addEventListener(  'focus',    validarCambiosUpdateUser);
+input_select_estado_modificar_user.addEventListener(  'click',    validarCambiosUpdateUser);
+input_select_estado_modificar_user.addEventListener(  'blur',     validarCambiosUpdateUser);
 
 // -----------------------------------------------------------------------------------
 
