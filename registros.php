@@ -907,6 +907,14 @@
                         <form style="max-width: 450px" action="./" class="form-modificar_alumno" method="post">
 
                             <div class="mb-3">
+                                <label for="NoControl-modificar_alumno" class="form-label">NoControl:</label>
+                                <input type="text" name="NoControl-modificar_alumno" id="NoControl-modificar_alumno" class="form-control" placeholder="Ingresar numero de control">
+                                <div class="invalid-feedback">
+                                    Ingrese un numero de control valido.
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
                                 <label for="nombre-modificar_alumno" class="form-label">Nombre:</label>
                                 <input type="text" name="nombre-modificar_alumno" id="nombre-modificar_alumno" class="form-control" placeholder="Ingresar nombre">
                                 <div class="invalid-feedback">
@@ -933,14 +941,21 @@
                             <div class="input-group mb-3">
                                 <label class="input-group-text" for="options-ESP-modificar_alumno">Especialidad</label>
                                 <select class="form-select" id="options-ESP-modificar_alumno">
-                                    <option selected></option>
-                                    <option id="Arquitectura-modificar_alumno" value="1">Arquitectura</option>
-                                    <option id="Logistica-modificar_alumno" value="2">Logistica</option>
-                                    <option id="Ofimatica-modificar_alumno" value="3">Ofimatica</option>
-                                    <option id="Preparacion-modificar_alumno" value="4">Preparación de Alimentos y Bebidas</option>
-                                    <option id="Programacion-modificar_alumno" value="5">Programación</option>
-                                    <option id="Contabilidad-modificar_alumno" value="6">Contabilidad</option>
+                                    <option id="Arquitectura-modificar_alumno"  value="1">Arquitectura</option>
+                                    <option id="Logistica-modificar_alumno"     value="2">Logistica</option>
+                                    <option id="Ofimatica-modificar_alumno"     value="3">Ofimatica</option>
+                                    <option id="Preparacion-modificar_alumno"   value="4">Preparación de Alimentos y Bebidas</option>
+                                    <option id="Programacion-modificar_alumno"  value="5">Programación</option>
+                                    <option id="Contabilidad-modificar_alumno"  value="6">Contabilidad</option>
                                 </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="curp-modificar_alumno" class="form-label">CURP:</label>
+                                <input type="text" name="curp-modificar_alumno" id="curp-modificar_alumno" class="form-control" placeholder="Ingresar CURP">
+                                <div class="invalid-feedback">
+                                    Ingrese una CURP valida.
+                                </div>
                             </div>
 
                             <div class="mb-3">
@@ -970,7 +985,7 @@
                         </form>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                        <button type="button" id="close-form-modificar_alumno" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
                         <button type="button" id="submit-form-modificar_alumno" class="btn btn-primary" disabled>Confirmar</button>
                     </div>
                 </div>
