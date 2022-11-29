@@ -14,6 +14,7 @@ const btnInsertUsuario = document.querySelector('#submit-form-insertar_usuario')
 
 const btnUpdateUsuarioSession = document.querySelector('#submit-modificar_usuario_session');
 const btnInsertAlumno = document.querySelector('#submit-form-insertar_alumno');
+const btnUpdateAlumno = document.querySelector('#submit-form-modificar_alumno');
 // -----------------------------------------------------------------------------------
 
 // inputs ----------------------------------------------------------------------------
@@ -31,12 +32,29 @@ const input_filtro_historial_users = document.querySelector('#filtro_historial_u
 
 const input_select_filtro_credenciales = document.querySelector('#options-filtro_credenciales');
 const input_filtro_credenciales = document.querySelector('#filtro_credencial');
+
+const input_select_esp_modificar_alumno = document.querySelector('#options-ESP-modificar_alumno');
+const input_select_estado_modeficar_alumno = document.querySelector('#options-estado-modificar_alumno');
 // -----------------------------------------------------------------------------------
 
 // Variables -------------------------------------------------------------------------
+
+const datosUpdateAlumno = {
+    NoControl: '',
+    nombre: '',
+    apP: '',
+    apM: '',
+    esp: '',
+    curp: '',
+    generacion: '',
+    nss: '',
+    estado: ''
+}
+
 const inputs = document.querySelectorAll('form input');
 
 const formUpdateUsuarioSession = document.querySelector('.form-modificar_usuario_sesion');
+const formUpdateAlumno = document.querySelector('.form-modificar_alumno');
 
 const expresiones = {
 	usuario: /^[a-zA-Z0-9\_\-]{5,25}$/, // Letras, numeros, guion y guion_bajo
@@ -51,7 +69,7 @@ const expresiones = {
     nss: /^\d{10}$/
 }
 
-const insertUsuario = {
+const insertUsuario = { // formulario insertar usuario
     nombre: false,
     apellido_p: false,
     apellido_m: false,
@@ -60,7 +78,7 @@ const insertUsuario = {
     pass: false
 }
 
-const updateUsuarioSession = {
+const updateUsuarioSession = { // formulario modificar datos del usuario actual
     user: true,
     nombre: true,
     apP: true,
@@ -69,7 +87,7 @@ const updateUsuarioSession = {
     telefono: true
 }
 
-const insertAlumno = {
+const insertAlumno = { // formulario insertar alumno
     nombre: false,
     apP: false,
     apM: false,
@@ -78,6 +96,18 @@ const insertAlumno = {
     nss: false,
     NoControl: false,
     curp: false
+}
+
+const updateAlumno = { // formulario modificar datos de alumno
+    NoControl: false,
+    nombre: false,
+    apP: false,
+    apM: false,
+    esp: false,
+    curp: false,
+    generacion: false,
+    nss: false,
+    estado: false
 }
 
 // -----------------------------------------------------------------------------------
@@ -139,22 +169,43 @@ const updateForm_modificar_alumno = function (e){
         data: {NoControl_consultar_alumno: NoControl_consultar_alumno},
         success: function (respuesta) {
             let request = JSON.parse(respuesta);
-            $("#options-ESP-modificar_alumno option[value=1]").attr("selected",false);
-            $("#options-ESP-modificar_alumno option[value=2]").attr("selected",false);
-            $("#options-ESP-modificar_alumno option[value=3]").attr("selected",false);
-            $("#options-ESP-modificar_alumno option[value=4]").attr("selected",false);
-            $("#options-ESP-modificar_alumno option[value=5]").attr("selected",false);
-            $("#options-ESP-modificar_alumno option[value=6]").attr("selected",false);
-            $("#options-estado-modificar_alumno option[value=1]").attr("selected",false);
-            $("#options-estado-modificar_alumno option[value=0]").attr("selected",false);
-            $('#nombre-modificar_alumno').val(request.nombre);
-            $('#apP-modificar_alumno').val(request.ap_paterno);
-            $('#apM-modificar_alumno').val(request.ap_materno);
-            $('#generacion-modificar_alumno').val(request.generacion);
-            $('#NSS-modificar_alumno').val(request.NSS);
-            switch (request.ESP){
+            // reiniciamos todos los opciones del select
+            $("#options-ESP-modificar_alumno option[value=1]").attr(    "selected",false);
+            $("#options-ESP-modificar_alumno option[value=2]").attr(    "selected",false);
+            $("#options-ESP-modificar_alumno option[value=3]").attr(    "selected",false);
+            $("#options-ESP-modificar_alumno option[value=4]").attr(    "selected",false);
+            $("#options-ESP-modificar_alumno option[value=5]").attr(    "selected",false);
+            $("#options-ESP-modificar_alumno option[value=6]").attr(    "selected",false);
+            $("#options-estado-modificar_alumno option[value=1]").attr( "selected",false);
+            $("#options-estado-modificar_alumno option[value=0]").attr( "selected",false);
+            // validamos los valores de los campos
+            updateAlumno.NoControl  = validarCampo( expresiones.NoControl,  request.NoControl,  $('#NoControl-modificar_alumno'   ).attr('id'));
+            updateAlumno.nombre     = validarCampo( expresiones.nombre,     request.nombre,     $('#nombre-modificar_alumno'      ).attr('id'));
+            updateAlumno.apP        = validarCampo( expresiones.nombre,     request.ap_paterno, $('#apP-modificar_alumno'         ).attr('id'));
+            updateAlumno.apM        = validarCampo( expresiones.nombre,     request.ap_materno, $('#apM-modificar_alumno'         ).attr('id'));
+            updateAlumno.curp       = validarCampo( expresiones.CURP,       request.curp,       $('#curp-modificar_alumno'        ).attr('id'));
+            updateAlumno.generacion = validarCampo( expresiones.generacion, request.generacion, $('#generacion-modificar_alumno'  ).attr('id'));
+            updateAlumno.nss        = validarCampo( expresiones.nss,        request.NSS,        $('#NSS-modificar_alumno'         ).attr('id'));
+            // guardamos los datos para comparar los cambios
+            datosUpdateAlumno.NoControl     = request.NoControl ;
+            datosUpdateAlumno.nombre        = request.nombre    ;
+            datosUpdateAlumno.apP           = request.ap_paterno;
+            datosUpdateAlumno.apM           = request.ap_materno;
+            datosUpdateAlumno.esp           = request.esp       ;
+            datosUpdateAlumno.curp          = request.curp      ;
+            datosUpdateAlumno.generacion    = request.generacion;
+            datosUpdateAlumno.nss           = request.NSS       ;
+            datosUpdateAlumno.estado        = request.estado    ;
+            // ponemos el valor correspondiente en cada campo
+            $('#NoControl-modificar_alumno').val(   request.NoControl   ); 
+            $('#nombre-modificar_alumno').val(      request.nombre      );
+            $('#apP-modificar_alumno').val(         request.ap_paterno  );
+            $('#apM-modificar_alumno').val(         request.ap_materno  );
+            $('#curp-modificar_alumno').val(        request.curp        );
+            $('#generacion-modificar_alumno').val(  request.generacion  );
+            $('#NSS-modificar_alumno').val(         request.NSS         );
+            switch (request.ESP){ // seleccionamos la opcion correspondiente de especialidad y estado
                 case 'Arquitectura':
-                    console.log('a');
                     $("#options-ESP-modificar_alumno option[value=1]").attr("selected",true);
                 break;
                 case 'Logistica':
@@ -352,33 +403,27 @@ const validarForm = (e) => {
         break;
 
         case 'user-session':
-            updateUsuarioSession.user = validarCampo(expresiones.usuario, e.target.value, e.target.id);
-            validarCambios();
+            validarCambiosUsuarioSession();
         break;
 
         case 'nombre-session':
-            updateUsuarioSession.nombre = validarCampo(expresiones.nombre, e.target.value, e.target.id);
-            validarCambios();
+            validarCambiosUsuarioSession();
         break;
 
         case 'apP-session':
-            updateUsuarioSession.apP = validarCampo(expresiones.nombre, e.target.value, e.target.id);
-            validarCambios();
+            validarCambiosUsuarioSession();
         break;
 
         case 'apM-session':
-            updateUsuarioSession.apM = validarCampo(expresiones.nombre, e.target.value, e.target.id);
-            validarCambios();
+            validarCambiosUsuarioSession();
         break;
 
         case 'correo-session':
-            updateUsuarioSession.correo = validarCampo(expresiones.correo, e.target.value, e.target.id);
-            validarCambios();
+            validarCambiosUsuarioSession();
         break;
 
         case 'telefono-session':
-            updateUsuarioSession.telefono = validarCampo(expresiones.telefono, e.target.value, e.target.id);
-            validarCambios();
+            validarCambiosUsuarioSession();
         break;
         
         case 'nombre-insertar_alumno':
@@ -409,16 +454,96 @@ const validarForm = (e) => {
             insertAlumno.curp = validarCampo(expresiones.CURP, e.target.value, e.target.id);
         break;
 
+        case 'NoControl-modificar_alumno':
+            validarCambiosUpdateAlumno();
+        break;
+
+        case 'nombre-modificar_alumno':
+            validarCambiosUpdateAlumno();
+        break;
+
+        case 'apP-modificar_alumno':
+            validarCambiosUpdateAlumno();
+        break;
+
+        case 'apM-modificar_alumno':
+            validarCambiosUpdateAlumno();
+        break;
+
+        case 'curp-modificar_alumno':
+            validarCambiosUpdateAlumno();
+        break;
+
+        case 'generacion-modificar_alumno':
+            validarCambiosUpdateAlumno();
+        break;
+
+        case 'NSS-modificar_alumno':
+            validarCambiosUpdateAlumno();
+        break;
     }
 }
 
-const validarCambios = function(){
-    let user = document.querySelector('#user-session'); 
-    let nombre = document.querySelector('#nombre-session');
-    let apP = document.querySelector('#apP-session');
-    let apM = document.querySelector('#apM-session');
-    let correo = document.querySelector('#correo-session');
-    let telefono = document.querySelector('#telefono-session');
+const validarCambiosUpdateAlumno = function(){
+    let NoControl   = document.querySelector('#NoControl-modificar_alumno'),
+    nombre          = document.querySelector('#nombre-modificar_alumno'),
+    apP             = document.querySelector('#apP-modificar_alumno'),
+    apM             = document.querySelector('#apM-modificar_alumno'),
+    esp             = document.querySelector('#options-ESP-modificar_alumno'),
+    curp            = document.querySelector('#curp-modificar_alumno'),
+    generacion      = document.querySelector('#generacion-modificar_alumno'),
+    nss             = document.querySelector('#NSS-modificar_alumno'),
+    estado          = document.querySelector('#options-estado-modificar_alumno');
+
+    updateAlumno.NoControl  = validarCampo(expresiones.NoControl,   NoControl.value,    NoControl.id    );
+    updateAlumno.nombre     = validarCampo(expresiones.nombre,      nombre.value,       nombre.id       );
+    updateAlumno.apP        = validarCampo(expresiones.nombre,      apP.value,          apP.id          );
+    updateAlumno.apM        = validarCampo(expresiones.nombre,      apM.value,          apM.id          );
+    updateAlumno.curp       = validarCampo(expresiones.CURP,        curp.value,         curp.id         );
+    updateAlumno.generacion = validarCampo(expresiones.generacion,  generacion.value,   generacion.id   );
+    updateAlumno.nss        = validarCampo(expresiones.nss,         nss.value,          nss.id          ); 
+
+    if (estado.value == 0 || estado.value == 1){
+        updateAlumno.estado = true;
+    }else{
+        updateAlumno.estado = false;
+    }
+    if (esp.value > 0 && esp.value < 7){
+        updateAlumno.esp = true;
+    }else{
+        updateAlumno.esp = false;
+    }
+
+    if (datosUpdateAlumno.NoControl != NoControl.value || datosUpdateAlumno.nombre != nombre.value || datosUpdateAlumno.apP != apP.value || datosUpdateAlumno.apM != apM.value || datosUpdateAlumno.esp != esp.value || datosUpdateAlumno.curp != curp.value || datosUpdateAlumno.generacion != generacion.value || datosUpdateAlumno.nss != nss.value || datosUpdateAlumno.estado != estado.value){
+        if (updateAlumno.NoControl && updateAlumno.nombre && updateAlumno.apP && updateAlumno.apM && updateAlumno.esp && updateAlumno.curp && updateAlumno.generacion && updateAlumno.nss && updateAlumno.estado){
+            document.querySelector('#submit-form-modificar_alumno').removeAttribute('disabled');
+            return true;
+        }else{
+            document.querySelector('#submit-form-modificar_alumno').setAttribute('disabled', true);
+            return false;
+        }
+    }else{
+        document.querySelector('#submit-form-modificar_alumno').setAttribute('disabled', true);
+        return false;
+    }
+    
+}
+
+const validarCambiosUsuarioSession = function(){
+    let user    = document.querySelector('#user-session'),
+    nombre      = document.querySelector('#nombre-session'),
+    apP         = document.querySelector('#apP-session'),
+    apM         = document.querySelector('#apM-session'),
+    correo      = document.querySelector('#correo-session'),
+    telefono    = document.querySelector('#telefono-session');
+
+    updateUsuarioSession.user   = validarCampo(expresiones.usuario, user.value,     user.id     );
+    updateUsuarioSession.nombre = validarCampo(expresiones.nombre,  nombre.value,   nombre.id   );
+    updateUsuarioSession.apP    = validarCampo(expresiones.nombre,  apP.value,      apP.id      );
+    updateUsuarioSession.apM    = validarCampo(expresiones.nombre,  apM.value,      apM.id      );
+    updateUsuarioSession.correo = validarCampo(expresiones.correo,  correo.value,   correo.id   );
+    updateUsuarioSession.user   = validarCampo(expresiones.telefono,telefono.value, telefono.id );
+
     if (updateUsuarioSession.user && updateUsuarioSession.nombre &&  updateUsuarioSession.apP && updateUsuarioSession.apM && updateUsuarioSession.correo && updateUsuarioSession.telefono){
         if (datosUsuarioSession.user != user.value || datosUsuarioSession.nombre != nombre.value || datosUsuarioSession.apP != apP.value || datosUsuarioSession.apM != apM.value || datosUsuarioSession.correo != correo.value || datosUsuarioSession.telefono != telefono.value){
             document.querySelector('#submit-modificar_usuario_session').removeAttribute('disabled');
@@ -427,10 +552,10 @@ const validarCambios = function(){
             document.querySelector('#submit-modificar_usuario_session').setAttribute('disabled',true);
             return false;
         }
-    }else{
-        document.querySelector('#submit-modificar_usuario_session').setAttribute('disabled', true);
-        return false;
     }
+    document.querySelector('#submit-modificar_usuario_session').setAttribute('disabled', true);
+    return false;
+    
 }
 
 const validarCampo = (exprecion, value, campo) => {
@@ -538,6 +663,8 @@ const submitFormInsertAlumno = function(){
     insertAlumno.curp = validarCampo(expresiones.CURP, curp.value, curp.id);
     if (especialidades.value > 0 && especialidades.value < 7){
         insertAlumno.esp = true;
+    }else{
+        insertAlumno.esp = false;
     }
     if(insertAlumno.nombre && insertAlumno.apP && insertAlumno.apM && insertAlumno.esp && insertAlumno.generacion && insertAlumno.nss && insertAlumno.NoControl && insertAlumno.curp){
         $.ajax({
@@ -588,15 +715,139 @@ const submitFormInsertAlumno = function(){
         });
     }
 }
+
+const submitUpdateAlumno = function (){
+    if (validarCambiosUpdateAlumno){
+        let NoControl   = document.querySelector('#NoControl-modificar_alumno'),
+        nombre          = document.querySelector('#nombre-modificar_alumno'),
+        apP             = document.querySelector('#apP-modificar_alumno'),
+        apM             = document.querySelector('#apM-modificar_alumno'),
+        esp             = document.querySelector('#options-ESP-modificar_alumno'),
+        curp            = document.querySelector('#curp-modificar_alumno'),
+        generacion      = document.querySelector('#generacion-modificar_alumno'),
+        nss             = document.querySelector('#NSS-modificar_alumno'),
+        estado          = document.querySelector('#options-estado-modificar_alumno');
+        $.ajax({
+            url: './db/queries.php',
+            type: 'POST',
+            data: {
+                updateAlumno_NoControl: NoControl.value,
+                updateAlumno_nombre: nombre.value,
+                updateAlumno_apP: apP.value,
+                updateAlumno_apM: apM.value,
+                updateAlumno_esp: esp.value,
+                updateAlumno_curp: curp.value,
+                updateAlumno_generacion: generacion.value,
+                updateAlumno_nss: nss.value,
+                updateAlumno_estado: estado.value,
+                updateAlumno_NoControl_old: datosUpdateAlumno.NoControl,
+                user_session_id: user_session_id, 
+                consulta_filtro_alumno: "SELECT NoControl, nombre, ap_paterno, ap_materno, nombreEspecialidad, curp, generacion, NSS, estado FROM alumnos, especialidades WHERE alumnos.especialidad = especialidades.NoEspecialidad and alumnos.NoControl LIKE'%%';"
+            },
+            success: function(respuesta){
+                switch (respuesta.charAt(0)){
+                    case 1:
+                        $('#curp-modificar_alumno').removeClass('is-valid');
+                        $('#curp-modificar_alumno').addClass('is-invalid');
+                        $('#curp-modificar_alumno + div').html('Esta curp se encuentra repetida');
+                        setTimeout(() => {
+                            $('#curp-modificar_alumno + div').html('Ingrese una curp valida.');
+                        }, 2000);
+                    break;
+                    case 2:
+                        $('#NSS-modificar_alumno').removeClass('is-valid');
+                        $('#NSS-modificar_alumno').addClass('is-invalid');
+                        $('#NSS-modificar_alumno + div').html('El NSS ya se encuentra registrado.');
+                        setTimeout(() => {
+                            $('#NSS-modificar_alumno + div').html('Ingrese un NSS valido.');
+                        }, 2000);
+                    break
+                    case 3:
+                        $('#NoControl-modificar_alumno').removeClass('is-valid');
+                        $('#NoControl-modificar_alumno').addClass('is-invalid');
+                        $('#NoControl-modificar_alumno + div').html('Este NoControl ya esta registrado');
+                        setTimeout(() => {
+                            $('#NoControl-modificar_alumno + div').html('Ingrese numero de control valido.');
+                        }, 2000);
+                    break;
+                    case 4:
+                        $("#options-ESP-modificar_alumno option[value=1]").attr(    "selected",false);
+                        $("#options-ESP-modificar_alumno option[value=2]").attr(    "selected",false);
+                        $("#options-ESP-modificar_alumno option[value=3]").attr(    "selected",false);
+                        $("#options-ESP-modificar_alumno option[value=4]").attr(    "selected",false);
+                        $("#options-ESP-modificar_alumno option[value=5]").attr(    "selected",false);
+                        $("#options-ESP-modificar_alumno option[value=6]").attr(    "selected",false);
+                        $("#options-estado-modificar_alumno option[value=1]").attr( "selected",false);
+                        $("#options-estado-modificar_alumno option[value=0]").attr( "selected",false);
+                        $('#nombre-modificar_alumno').val('');
+                        $('#apP-modificar_alumno').val('');
+                        $('#apM-modificar_alumno').val('');
+                        $('#generacion-modificar_alumno').val('');
+                        $('#NSS-modificar_alumno').val('');
+                        $('#NoControl-modificar_alumno').val('');
+                        $('#curp-modificar_alumno').val('');
+                        
+                        $('#nombre-modificar_alumno').removeClass('is-valid');
+                        $('#apP-modificar_alumno').removeClass('is-valid');
+                        $('#apM-modificar_alumno').removeClass('is-valid');
+                        $('#options-ESP-modificar_alumno').removeClass('is-valid');
+                        $('#generacion-modificar_alumno').removeClass('is-valid');
+                        $('#NSS-modificar_alumno').removeClass('is-valid');
+                        $('#NoControl-modificar_alumno').removeClass('is-valid');
+                        $('#curp-modificar_alumno').removeClass('is-valid');
+                        alert('El alumno que intentas modificar no existe.');
+                        document.querySelector('#close-form-modificar_alumno').click();
+                    break;
+                }
+                respuesta = respuesta.substring(1);
+                document.querySelectorAll('.Registro_alumno').forEach((elemnt) => {
+                    elemnt.removeEventListener('click', updateForm_modificar_alumno);
+                });
+                let request = JSON.parse(respuesta);
+                $('#container_registros_alumnos').html(request);
+                document.querySelectorAll('.Registro_alumno').forEach((elemnt) => {
+                    elemnt.addEventListener('click', updateForm_modificar_alumno);
+                });
+                $("#options-ESP-modificar_alumno option[value=1]").attr(    "selected",false);
+                $("#options-ESP-modificar_alumno option[value=2]").attr(    "selected",false);
+                $("#options-ESP-modificar_alumno option[value=3]").attr(    "selected",false);
+                $("#options-ESP-modificar_alumno option[value=4]").attr(    "selected",false);
+                $("#options-ESP-modificar_alumno option[value=5]").attr(    "selected",false);
+                $("#options-ESP-modificar_alumno option[value=6]").attr(    "selected",false);
+                $("#options-estado-modificar_alumno option[value=1]").attr( "selected",false);
+                $("#options-estado-modificar_alumno option[value=0]").attr( "selected",false);
+                $('#nombre-modificar_alumno').val('');
+                $('#apP-modificar_alumno').val('');
+                $('#apM-modificar_alumno').val('');
+                $('#generacion-modificar_alumno').val('');
+                $('#NSS-modificar_alumno').val('');
+                $('#NoControl-modificar_alumno').val('');
+                $('#curp-modificar_alumno').val('');
+
+                
+                $('#nombre-modificar_alumno').removeClass('is-valid');
+                $('#apP-modificar_alumno').removeClass('is-valid');
+                $('#apM-modificar_alumno').removeClass('is-valid');
+                $('#options-ESP-modificar_alumno').removeClass('is-valid');
+                $('#generacion-modificar_alumno').removeClass('is-valid');
+                $('#NSS-modificar_alumno').removeClass('is-valid');
+                $('#NoControl-modificar_alumno').removeClass('is-valid');
+                $('#curp-modificar_alumno').removeClass('is-valid');
+                document.querySelector('#close-form-modificar_alumno').click();
+            }
+        });
+    }
+}
 // -----------------------------------------------------------------------------------
 
 // escuchadores ----------------------------------------------------------------------
 btnUpdateUsuarioSession.addEventListener('click', ()=>{
-    if (validarCambios()){
+    if (validarCambiosUsuarioSession()){
         formUpdateUsuarioSession.submit();
     }
 });
 btnInsertAlumno.addEventListener('click', submitFormInsertAlumno);
+btnUpdateAlumno.addEventListener('click', submitUpdateAlumno);
 btn_logout_session.addEventListener('click', () => {window.location = './db/logout'});
 btn_back.addEventListener('click', () => {window.location = './'});
 btnInsertUsuario.addEventListener('click', submitInsertUsuario);
@@ -644,6 +895,15 @@ inputs.forEach((input) => {
     input.addEventListener('keyup', validarForm);
     input.addEventListener('blur', validarForm);
 });
+
+input_select_esp_modificar_alumno.addEventListener(  'focus',    validarCambiosUpdateAlumno);
+input_select_esp_modificar_alumno.addEventListener(  'click',    validarCambiosUpdateAlumno);
+input_select_esp_modificar_alumno.addEventListener(  'blur',     validarCambiosUpdateAlumno);
+
+input_select_estado_modeficar_alumno.addEventListener(  'focus',    validarCambiosUpdateAlumno);
+input_select_estado_modeficar_alumno.addEventListener(  'click',    validarCambiosUpdateAlumno);
+input_select_estado_modeficar_alumno.addEventListener(  'blur',     validarCambiosUpdateAlumno);
+
 // -----------------------------------------------------------------------------------
 
 

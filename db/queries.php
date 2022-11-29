@@ -73,7 +73,7 @@
         }
         
         public function getAlumnoInfo($NoControl){
-            $query = $this->connect()->prepare("SELECT NoControl, nombre, ap_paterno, ap_materno, nombreEspecialidad, curp, generacion, NSS, estado FROM alumnos, especialidades WHERE alumnos.NoControl = $NoControl AND alumnos.especialidad = especialidades.NoEspecialidad;");
+            $query = $this->connect()->prepare("SELECT NoControl, nombre, ap_paterno, ap_materno, NoEspecialidad, nombreEspecialidad, curp, generacion, NSS, estado FROM alumnos, especialidades WHERE alumnos.NoControl = $NoControl AND alumnos.especialidad = especialidades.NoEspecialidad;");
             $query->execute();
             foreach($query as $registro){
                 $datos = [
@@ -82,6 +82,7 @@
                     'ap_paterno'    => $registro['ap_paterno'],
                     'ap_materno'    => $registro['ap_materno'],
                     'ESP'           => $registro['nombreEspecialidad'],
+                    'esp'           => $registro['NoEspecialidad'],
                     'curp'          => $registro['curp'],
                     'generacion'    => $registro['generacion'],
                     'NSS'           => $registro['NSS'],
@@ -210,8 +211,39 @@
             return false;
         }
 
-        public function setAlumno($NoControl, $nombre, $apellido_p, $apellido_m, $curp, $esp, $generacion, $nss){
-            $this->connect()->query("INSERT INTO alumnos VALUES ($NoControl, '$nombre', '$apellido_p', '$apellido_m',  $esp, '$curp', '$generacion', $nss, 1);");
+        public function setAlumno($NoControl, $nombre, $apellido_p, $apellido_m, $curp, $esp, $generacion, $nss, $estado = 1){
+            $this->connect()->query("INSERT INTO alumnos VALUES ($NoControl, '$nombre', '$apellido_p', '$apellido_m',  $esp, '$curp', '$generacion', $nss, $estado);");
+        }
+
+        public function confirmNoControl($NoControl){
+            $query = $this->connect()->prepare("SELECT NoControl FROM alumnos WHERE NoControl = $NoControl");
+            $query->execute();
+            if ($query->rowCount()){
+                return true;
+            }
+            return false;
+        }
+
+        public function confirmCurp($curp){
+            $query = $this->connect()->prepare("SELECT curp FROM alumnos WHERE curp = '$curp'");
+            $query->execute();
+            if ($query->rowCount()){
+                return true;
+            }
+            return false;
+        }
+
+        public function confirmNss($NSS){
+            $query = $this->connect()->prepare("SELECT NSS FROM alumnos WHERE NSS = $NSS");
+            $query->execute();
+            if ($query->rowCount()){
+                return true;
+            }
+            return false;
+        }
+
+        public function deleteAlumno ($NoControl){
+            $this->connect()->query("DELETE FROM alumnos WHERE NoControl = $NoControl");
         }
 
     }
@@ -224,6 +256,51 @@
 
     if (isset($_POST['insertAlumno_nombre']) && isset($_POST['insertAlumno_ap_p']) && isset($_POST['insertAlumno_aP_m']) && isset($_POST['insertAlumno_esp']) && isset($_POST['insertAlumno_gen']) && isset($_POST['insertAlumno_nss']) && isset($_POST['insertAlumno_NoControl']) && isset($_POST['insertAlumno_curp'])){
         $consulta->setAlumno($_POST['insertAlumno_NoControl'], $_POST['insertAlumno_nombre'], $_POST['insertAlumno_ap_p'], $_POST['insertAlumno_aP_m'], $_POST['insertAlumno_curp'], $_POST['insertAlumno_esp'], $_POST['insertAlumno_gen'], $_POST['insertAlumno_nss']);
+    }
+
+    if (isset($_POST['updateAlumno_NoControl']) && isset($_POST['updateAlumno_nombre']) && isset($_POST['updateAlumno_apP']) && isset($_POST['updateAlumno_apM']) && isset($_POST['updateAlumno_esp']) && isset($_POST['updateAlumno_curp']) && isset($_POST['updateAlumno_generacion']) && isset($_POST['updateAlumno_nss']) && isset($_POST['updateAlumno_estado']) && isset($_POST['updateAlumno_NoControl_old']) && isset($_POST['user_session_id'])){
+        $NoControl = $_POST['updateAlumno_NoControl'];
+        $nombre = $_POST['updateAlumno_nombre'];
+        $apP = $_POST['updateAlumno_apP'];
+        $apM = $_POST['updateAlumno_apM'];
+        $esp = $_POST['updateAlumno_esp'];
+        $curp = $_POST['updateAlumno_curp'];
+        $generacion = $_POST['updateAlumno_generacion'];
+        $nss = $_POST['updateAlumno_nss'];
+        $estado = $_POST['updateAlumno_estado'];
+        $NoControl_old = $_POST['updateAlumno_NoControl_old'];
+        $user_id = $_POST['user_session_id'];
+        $error;
+        if ($consulta->confirmNoControl($NoControl_old)){
+            $datos_old = $consulta->getAlumnoInfo($NoControl_old);
+            $consulta->deleteAlumno($NoControl_old);
+            if (!$consulta->confirmCurp($curp)){
+                if (!$consulta->confirmNss($nss)){
+                    if (!$consulta->confirmNoControl($NoControl)){
+                        $consulta->setAlumno($NoControl, $nombre, $apP, $apM, $curp, $esp, $generacion, $nss, $estado);
+                        $error = 0;
+                        $consulta->setHistorialUsuario('Modifico la informacion de ' . $datos_old['NoControl'] . ' a ' . $NoControl, $user_id, date('d/m/Y, h:i:s'));
+                        echo json_encode($error);
+                    }else{
+                        $error = 3;
+                        echo json_encode($error);
+                        $consulta->setAlumno($datos_old['NoControl'], $datos_old['nombre'], $datos_old['ap_paterno'], $datos_old['ap_materno'], $datos_old['curp'], $datos_old['esp'], $datos_old['generacion'], $datos_old['NSS'], $datos_old['estado']);
+                    }
+                }else{
+                    $error = 2;
+                    echo json_encode($error);
+                    $consulta->setAlumno($datos_old['NoControl'], $datos_old['nombre'], $datos_old['ap_paterno'], $datos_old['ap_materno'], $datos_old['curp'], $datos_old['esp'], $datos_old['generacion'], $datos_old['NSS'], $datos_old['estado']);
+                }
+            }else{
+                $error = 1;
+                echo json_encode($error);
+                $consulta->setAlumno($datos_old['NoControl'], $datos_old['nombre'], $datos_old['ap_paterno'], $datos_old['ap_materno'], $datos_old['curp'], $datos_old['esp'], $datos_old['generacion'], $datos_old['NSS'], $datos_old['estado']);
+            }
+        }else{
+            $error = 4;
+            echo json_encode($error);
+        }
+
     }
 
     if(isset($_POST['insertUsuario_usuario']) && isset($_POST['insertUsuario_nombre']) && isset($_POST['insertUsuario_ap_p']) && isset($_POST['insertUsuario_ap_m']) && isset($_POST['insertUsuario_correo']) && isset($_POST['insertUsuario_telefono']) && isset($_POST['insertUsuario_rol']) && isset($_POST['insertUsuario_pass']) && isset($_POST['id_user'])){
